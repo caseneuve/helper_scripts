@@ -2,7 +2,6 @@ import getpass
 import json
 from unittest.mock import Mock, call, patch
 
-import pytest
 import responses
 
 from pythonanywhere.api import get_api_endpoint
@@ -10,25 +9,31 @@ from pythonanywhere.task import Task
 
 
 class TestTask:
-    def test_daily_enabled(self):
-        task = Task("myscript.py", 8, 10, False)
+    def test_new_daily_enabled(self):
+        task = Task(command="myscript.py", hour=8, minute=10, disabled=False)
         assert task.command == "myscript.py"
         assert task.hour == 8
         assert task.minute == 10
         assert task.interval == "daily"
         assert task.enabled is True
 
-    def test_hourly_disabled(self):
-        task = Task("myscript.py", None, 10, True)
+    def test_new_hourly_disabled(self):
+        task = Task(command="myscript.py", hour=None, minute=10, disabled=True)
         assert task.command == "myscript.py"
         assert task.hour == None
         assert task.minute == 10
         assert task.interval == "hourly"
         assert task.enabled is False
 
-    def test_creates_daily_task(self, api_token, api_responses):
+    def test_old_task(self):
+        task = Task(task_id=42)
+        assert task.task_id == 42
+        assert task.interval == None
+        assert task.enabled == None
+
+    def test_creates_daily_task(self, api_token, api_responses, mocker):
+        mock_create = mocker.patch("pythonanywhere.schedule_api.Schedule.create")
         username = getpass.getuser()
-        url = get_api_endpoint().format(username=username, flavor="schedule")
         task_specs = {
             "can_enable": False,
             "command": "echo foo",
@@ -38,22 +43,26 @@ class TestTask:
                 username=username
             ),
             "hour": 16,
-            "id": 123,
+            "task_id": 123,
             "interval": "daily",
             "logfile": "/user/{username}/files/var/log/tasklog-126708-daily-at-1600-echo_foo.log",
             "minute": 0,
             "printable_time": "16:00",
             "url": "/api/v0/user/{username}/schedule/123".format(username=username),
+            "user": username,
         }
+        mock_create.return_value = task_specs
+        task = Task(command="echo foo", hour=16, minute=0, disabled=False)
 
-        api_responses.add(
-            responses.POST, url=url, status=201, body=json.dumps(task_specs),
-        )
-
-        task = Task("echo foo", 16, 0, False)
         task.create_schedule()
-
-        task_specs["task_id"] = task_specs.pop("id")
 
         for attr, value in task_specs.items():
             assert getattr(task, attr) == value
+        assert mock_create.call_count == 1
+
+    def test_calls_schedule_delete(self, mocker):
+        mock_delete = mocker.patch("pythonanywhere.schedule_api.Schedule.delete")
+
+        Task(task_id=42).delete_schedule()
+
+        assert mock_delete.call_args == call(42)
