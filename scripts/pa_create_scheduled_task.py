@@ -1,4 +1,4 @@
-# #!/usr/bin/python3.5
+#!/usr/bin/python3.5
 """Create a new scheduled task.
 
 Usage:
