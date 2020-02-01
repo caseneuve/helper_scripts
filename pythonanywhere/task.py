@@ -20,6 +20,10 @@ class Task:
         self.user = None
         self.schedule = Schedule()
 
+        if task_id:
+            info = self.schedule.get_specs(task_id)
+            self.update_specs(info)
+
     def create_schedule(self):
         params = {
             "command": self.command,
@@ -28,10 +32,12 @@ class Task:
             "interval": self.interval,
             "minute": self.minute,
         }
-        result = self.schedule.create(params)
-
-        for attr, value in result.items():
-            setattr(self, attr, value)
+        info = self.schedule.create(params)
+        self.update_specs(info)
 
     def delete_schedule(self):
         self.schedule.delete(self.task_id)
+
+    def update_specs(self, specs):
+        for attr, value in specs.items():
+            setattr(self, attr, value)
