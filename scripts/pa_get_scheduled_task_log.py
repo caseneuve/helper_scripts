@@ -16,7 +16,7 @@ from pythonanywhere.task import Task
 
 
 def main(task_id):
-    filename = Task(task_id=task_id).logfile
+    filename = Task.from_id(task_id=task_id).logfile
 
     # hack to get user path instead of server path:
     filename = filename.replace(
