@@ -15,13 +15,12 @@ class Schedule:
 
         if result.status_code == 201:
             specs = result.json()
-            specs["task_id"] = specs.pop("id")
             print(
                 snakesay(
                     "Task '{command}' succesfully created with id {id_} "
                     "and will be run {interval} at {printable_time}".format(
                         command=specs["command"],
-                        id_=specs["task_id"],
+                        id_=specs["id"],
                         interval=specs["interval"],
                         printable_time=specs["printable_time"],
                     )
@@ -57,4 +56,8 @@ class Schedule:
             "{base_url}{task_id}/".format(base_url=self.base_url, task_id=task_id),
             "GET",
         )
+        return result.json()
+
+    def get_list(self):
+        result = call_api("{base_url}".format(base_url=self.base_url), "GET")
         return result.json()

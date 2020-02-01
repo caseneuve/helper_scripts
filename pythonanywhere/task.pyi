@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 from typing_extensions import Literal
 
@@ -24,3 +24,7 @@ class Task:
     ) -> None: ...
     def create_schedule(self) -> None: ...
     def delete_schedule(self) -> None: ...
+
+class TaskList:
+    tasks = List[Task]
+    def __init__(self) -> None: ...

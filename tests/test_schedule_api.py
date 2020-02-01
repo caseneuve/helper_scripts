@@ -47,8 +47,6 @@ class TestScheduleCreate:
 
         result = Schedule().create(params)
 
-        task_specs["task_id"] = task_specs.pop("id")
-
         assert result == task_specs
 
 

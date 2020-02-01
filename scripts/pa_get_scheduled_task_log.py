@@ -8,13 +8,22 @@ Options:
   -h --help                      Print this message
 """
 
+import getpass
+
 from docopt import docopt
 
 from pythonanywhere.task import Task
 
 
 def main(task_id):
-    print(Task(task_id=task_id).logfile)
+    filename = Task(task_id=task_id).logfile
+
+    # hack to get user path instead of server path:
+    filename = filename.replace(
+        "/user/{username}/files".format(username=getpass.getuser()), ""
+    )
+
+    print(filename)
 
 
 if __name__ == "__main__":
