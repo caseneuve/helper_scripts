@@ -52,7 +52,7 @@ class Schedule:
                 )
             )
 
-    def get_specs(self, taks_id):
+    def get_specs(self, task_id):
         result = call_api(
             "{base_url}{task_id}/".format(base_url=self.base_url, task_id=task_id),
             "GET",
