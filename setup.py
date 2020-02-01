@@ -40,6 +40,7 @@ setup(
         "pythonanywhere/snakesay.py",
         "scripts/pa_autoconfigure_django.py",
         "scripts/pa_create_scheduled_task.py",
+        "scripts/pa_get_scheduled_task_log",
         "scripts/pa_delete_scheduled_task.py",
         "scripts/pa_install_webapp_letsencrypt_ssl.py",
         "scripts/pa_install_webapp_ssl.py",
