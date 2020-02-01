@@ -2,7 +2,7 @@
 """Get list of user's scheduled tasks.
 
 Usage:
-  pa_get_scheduled_tasks_list.py [--format]
+  pa_get_scheduled_tasks_list.py [--format=<format>]
 
 Options:
   -h --help                      Print this message
