@@ -2,12 +2,14 @@ import getpass
 import json
 from unittest.mock import Mock, call, patch
 
+import pytest
 import responses
 
 from pythonanywhere.api import get_api_endpoint
 from pythonanywhere.task import Task
 
 
+@pytest.mark.tasks
 class TestTask:
     def test_new_daily_enabled(self):
         task = Task(command="myscript.py", hour=8, minute=10, disabled=False)

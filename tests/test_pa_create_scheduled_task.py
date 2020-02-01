@@ -1,8 +1,10 @@
 from unittest.mock import call
 
+import pytest
 from scripts.pa_create_scheduled_task import main
 
 
+@pytest.mark.tasks
 def test_calls_all_stuff_in_right_order(mocker):
     mock_Task = mocker.patch("scripts.pa_create_scheduled_task.Task")
 

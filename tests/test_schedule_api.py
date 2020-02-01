@@ -2,12 +2,14 @@ import getpass
 import json
 from unittest.mock import call
 
+import pytest
 import responses
 
 from pythonanywhere.api import get_api_endpoint
 from pythonanywhere.schedule_api import Schedule
 
 
+@pytest.mark.tasks
 class TestScheduleCreate:
     def test_checks_params(self):
         pass
