@@ -26,15 +26,18 @@ class Task:
         return task
 
     @classmethod
-    def to_be_created(
-        cls, *, command=None, hour=None, minute=None, disabled=None, task_id=None
-    ):
+    def to_be_created(cls, *, command, hour=None, minute, disabled=False):
+        if hour is not None and not (0 <= hour <= 23):
+            raise ValueError("Hour has to be in 0..23")
+        if not (0 <= minute <= 59):
+            raise ValueError("Minute has to be in 0..59")
+
         task = cls()
         task.command = command
         task.hour = hour
         task.minute = minute
-        task.interval = "daily" if hour else "hourly" if not task_id else None
-        task.enabled = not disabled if not task_id else None
+        task.interval = "daily" if hour else "hourly"
+        task.enabled = not disabled
         return task
 
     @classmethod

@@ -95,6 +95,16 @@ class TestTask:
 
         assert mock_delete.call_args == call(42)
 
+    def test_raises_when_to_be_created_gets_wrong_hour(self):
+        with pytest.raises(ValueError) as e:
+            Task.to_be_created(command="echo foo", hour=25, minute=1)
+        assert str(e.value) == "Hour has to be in 0..23"
+
+    def test_raises_when_to_be_created_gets_wrong_minute(self):
+        with pytest.raises(ValueError) as e:
+            Task.to_be_created(command="echo foo", hour=12, minute=78)
+        assert str(e.value) == "Minute has to be in 0..59"
+
 
 @pytest.mark.tasks
 class TestTaskList:
