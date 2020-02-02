@@ -45,6 +45,7 @@ example_specs = [
 
 
 @pytest.mark.tasks
+@pytest.mark.dev
 def test_calls_all_stuff_in_right_order(mocker):
     mock_TaskList = mocker.patch("scripts.pa_get_scheduled_tasks_list.TaskList")
     mock_TaskList.return_value.tasks = [
@@ -52,7 +53,7 @@ def test_calls_all_stuff_in_right_order(mocker):
     ]
     mock_tabulate = mocker.patch("scripts.pa_get_scheduled_tasks_list.tabulate")
 
-    main(fmt="orgtbl")
+    main(fmt="orgtbl", columns=None)
 
     headers = "id", "interval", "at", "enabled", "command"
     attrs = "task_id", "interval", "printable_time", "enabled", "command"
