@@ -10,5 +10,7 @@ def test_calls_all_stuff_in_right_order(mocker):
 
     main("echo foo", 8, 10, False)
 
-    assert mock_Task.call_args == call("echo foo", 8, 10, False)
+    assert mock_Task.call_args == call(
+        command="echo foo", hour=8, minute=10, disabled=False
+    )
     assert mock_Task.return_value.method_calls == [call.create_schedule()]

@@ -26,7 +26,7 @@ class Task:
         return task
 
     @classmethod
-    def to_be_created(cls, *, command, hour=None, minute, disabled=False):
+    def to_be_created(cls, *, command, minute, hour=None, disabled=False):
         if hour is not None and not (0 <= hour <= 23):
             raise ValueError("Hour has to be in 0..23")
         if not (0 <= minute <= 59):
