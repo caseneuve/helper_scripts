@@ -13,6 +13,7 @@ import getpass
 from docopt import docopt
 from schema import And, Schema
 
+from pythonanywhere.scripts_commons import validate_user_input
 from pythonanywhere.task import Task
 
 
