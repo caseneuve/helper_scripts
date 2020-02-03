@@ -3,14 +3,12 @@
 id, interval, at (hour:minute/minute past), enabled, command.
 
 Usage:
-  pa_get_scheduled_tasks_list.py [--format=<format>] [--columns=<comma_separated_cols>] [--listfmt]
+  pa_get_scheduled_tasks_list.py [--format=<format>]
 
 Options:
   -h --help                      Print this message
   -f --format=<format>           Table format supported by tabulate
                                  (defaults to 'simple')
-  -c --columns=<columns>         Comma separated columns to display
-                                 (defaults to all)
 """
 
 import getpass

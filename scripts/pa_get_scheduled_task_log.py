@@ -11,7 +11,7 @@ Options:
 import getpass
 
 from docopt import docopt
-from schema import Schema
+from schema import And, Schema
 
 from pythonanywhere.task import Task
 
