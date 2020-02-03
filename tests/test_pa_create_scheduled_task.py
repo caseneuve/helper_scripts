@@ -6,7 +6,7 @@ from scripts.pa_create_scheduled_task import main
 
 @pytest.mark.tasks
 def test_calls_all_stuff_in_right_order(mocker):
-    mock_Task = mocker.patch("scripts.pa_create_scheduled_task.Task")
+    mock_Task = mocker.patch("scripts.pa_create_scheduled_task.Task.to_be_created")
 
     main("echo foo", 8, 10, False)
 

@@ -31,7 +31,7 @@ from pythonanywhere.task import Task
 
 def main(command, hour, minute, disabled):
     hour = int(hour) if hour is not None else None
-    task = Task(command, hour, int(minute), disabled)
+    task = Task.to_be_created(command, hour, int(minute), disabled)
     task.create_schedule()
 
 
