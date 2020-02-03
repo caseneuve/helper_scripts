@@ -50,10 +50,12 @@ class Task:
         params = {
             "command": self.command,
             "enabled": self.enabled,
-            "hour": self.hour,
             "interval": self.interval,
             "minute": self.minute,
         }
+        if self.hour:
+            params["hour"] = self.hour
+
         info = self.schedule.create(params)
         self.update_specs(info)
 

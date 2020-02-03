@@ -38,15 +38,27 @@ class TestTask:
         assert task.interval == "daily"
         assert task.enabled is True
 
-    def test_new_hourly_disabled(self):
+    # todo: przesunąć mocka niżej
+    def test_new_hourly_disabled(self, mocker):
+        mock_create = mocker.patch("pythonanywhere.schedule_api.Schedule.create")
         task = Task.to_be_created(
             command="myscript.py", hour=None, minute=10, disabled=True
         )
+        task.create_schedule()
         assert task.command == "myscript.py"
         assert task.hour == None
         assert task.minute == 10
         assert task.interval == "hourly"
         assert task.enabled is False
+        assert mock_create.call_count == 1
+        assert mock_create.call_args == call(
+            {
+                "command": "myscript.py",
+                "minute": 10,
+                "enabled": False,
+                "interval": "hourly",
+            }
+        )
 
     def test_update_specs(self, mocker):
         mock_get_specs = mocker.patch("pythonanywhere.schedule_api.Schedule.get_specs")
