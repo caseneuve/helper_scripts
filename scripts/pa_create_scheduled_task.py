@@ -29,8 +29,9 @@ from pythonanywhere.scripts_commons import validate_user_input
 from pythonanywhere.task import Task
 
 
-def main(command, hour, minute, disabled):
-    task = Task(command, hour, minute, disabled)
+def main(*, command, hour, minute, disabled):
+    hour = int(hour) if hour is not None else None
+    task = Task(command, hour, int(minute), disabled)
     task.create_schedule()
 
 
@@ -51,9 +52,4 @@ if __name__ == "__main__":
     )
     arguments = validate_user_input(docopt(__doc__), schema)
 
-    main(
-        arguments["--command"],
-        int(arguments["--hour"]) if arguments.get("--hour", "").isdigit() else None,
-        int(arguments["--minute"]),
-        arguments["--disabled"],
-    )
+    main(**arguments)
