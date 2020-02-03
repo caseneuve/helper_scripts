@@ -19,7 +19,7 @@ from pythonanywhere.task import Task
 
 
 def main(task_id):
-    task = Task(task_id=task_id)
+    task = Task.from_id(task_id=task_id)
     task.delete_schedule()
 
 
