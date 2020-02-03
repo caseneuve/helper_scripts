@@ -53,7 +53,7 @@ if __name__ == "__main__":
 
     main(
         arguments["--command"],
-        int(arguments["--hour"]) if arguments.get("--hour").isdigit() else None,
+        int(arguments["--hour"]) if arguments.get("--hour", "").isdigit() else None,
         int(arguments["--minute"]),
         arguments["--disabled"],
     )
