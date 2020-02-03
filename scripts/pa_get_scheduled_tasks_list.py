@@ -11,7 +11,6 @@ Options:
                                  (defaults to 'simple')
   -c --columns=<columns>         Comma separated columns to display
                                  (defaults to all)
-  -l --listfmt                   Print available table formats
 """
 
 import getpass
@@ -21,8 +20,8 @@ from docopt import docopt
 from schema import And, Or, Schema, SchemaError, Use
 from tabulate import tabulate
 
+from pythonanywhere.scripts_commons import validate_user_input
 from pythonanywhere.task import TaskList
-from scripts.script_commons import validate_user_input
 
 headers = "id", "interval", "at", "enabled", "command"
 formats = [
@@ -48,15 +47,10 @@ formats = [
 ]
 
 
-def main(fmt, columns, listfmt):
-    if listfmt:
-        print("Available table formats are:")
-        for fmt in formats:
-            print(fmt)
-    else:
-        attrs = "task_id", "interval", "printable_time", "enabled", "command"
-        table = [[getattr(task, attr) for attr in attrs] for task in TaskList().tasks]
-        print(tabulate(table, headers, tablefmt=fmt))
+def main(fmt):
+    attrs = "task_id", "interval", "printable_time", "enabled", "command"
+    table = [[getattr(task, attr) for attr in attrs] for task in TaskList().tasks]
+    print(tabulate(table, headers, tablefmt=fmt))
 
 
 if __name__ == "__main__":
@@ -66,21 +60,9 @@ if __name__ == "__main__":
                 None,
                 And(str, lambda f: f in formats),
                 error="--format should match one of: {}".format(", ".join(formats)),
-            ),
-            "--columns": Or(
-                None,
-                And(str, lambda c: all([col in headers for col in c.split(",")])),
-                error="--columns should match at least one of: {}".format(
-                    ",".join(headers)
-                ),
-            ),
-            "--list": Or(None, True),
+            )
         }
     )
     arguments = validate_user_input(docopt(__doc__), schema)
 
-    main(
-        arguments.get("--format", "simple"),
-        arguments.get("--columns"),
-        arguments.get("--list"),
-    )
+    main(arguments.get("--format", "simple"),)
