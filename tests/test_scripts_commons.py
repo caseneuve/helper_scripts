@@ -2,7 +2,8 @@ from unittest.mock import call
 
 import pytest
 from schema import And, Schema, SchemaError
-from scripts.script_commons import validate_user_input
+
+from pythonanywhere.scripts_commons import validate_user_input
 
 example_schema = Schema(
     {
@@ -25,7 +26,7 @@ class TestValidateUserInput:
     def test_raises_because_arguments_dont_match_schema(self, mocker):
         args = {"a": 0, "b": "foobaz"}
         mock_print = mocker.patch("builtins.print")
-        mock_exit = mocker.patch("scripts.script_commons.sys.exit")
+        mock_exit = mocker.patch("pythonanywhere.scripts_commons.sys.exit")
 
         validate_user_input(args, example_schema)
 

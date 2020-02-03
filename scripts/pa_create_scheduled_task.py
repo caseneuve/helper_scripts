@@ -16,8 +16,8 @@ import sys
 
 from docopt import docopt
 from schema import And, Or, Schema, SchemaError, Use
-from scripts.script_commons import validate_user_input
 
+from pythonanywhere.scripts_commons import validate_user_input
 from pythonanywhere.task import Task
 
 
