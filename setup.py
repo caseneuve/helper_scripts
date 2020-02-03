@@ -29,7 +29,7 @@ setup(
     ],
     keywords="pythonanywhere api cloud web hosting",
     packages=["pythonanywhere"],
-    install_requires=["docopt", "requests", "python-dateutil", "schema"],
+    install_requires=["docopt", "python-dateutil", "requests", "schema", "tabulate"],
     extras_require={},
     python_requires=">=3.5",
     package_data={},
