@@ -12,7 +12,6 @@ Options:
 """
 
 import getpass
-import sys
 
 from docopt import docopt
 from schema import And, Or, Schema, SchemaError, Use

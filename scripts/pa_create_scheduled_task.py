@@ -11,8 +11,16 @@ Options:
                                  (otherwise the task will be run hourly)
   -m --minute=<minute>           Minute on which the task will be executed
   -d --disabled                  Create disabled task (by default tasks are enabled)
+
+Example:
+  Create a daily task to be run at 13:15:
+
+    pa_create_scheduled_task.py --command "echo foo" --hour 13 --minute 15
+
+  Create an inactive hourly task to be run 27 minutes past every hour:
+
+    pa_create_scheduled_task.py --command "echo bar" --minute 27 --disabled
 """
-import sys
 
 from docopt import docopt
 from schema import And, Or, Schema, SchemaError, Use
@@ -29,6 +37,7 @@ def main(command, hour, minute, disabled):
 if __name__ == "__main__":
     schema = Schema(
         {
+            "--command": str,
             "--hour": Or(
                 None,
                 And(Use(int), lambda h: 0 <= h <= 23),
@@ -37,6 +46,7 @@ if __name__ == "__main__":
             "--minute": And(
                 Use(int), lambda m: 0 <= m <= 59, error="--minute has to be in 0..59"
             ),
+            "--disabled": Or(None, bool),
         }
     )
     arguments = validate_user_input(docopt(__doc__), schema)

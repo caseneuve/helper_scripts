@@ -1,11 +1,14 @@
 #!/usr/bin/python3.5
-"""Get current scheduled task log file by task.
+"""Get current scheduled task's log file by task id.
 
 Usage:
   pa_get_scheduled_task_log.py <id>
 
 Options:
   -h --help                      Print this message
+
+Note:
+  Task <id> may be found using pa_get_scheduled_tasks_list.py script.
 """
 
 import getpass
