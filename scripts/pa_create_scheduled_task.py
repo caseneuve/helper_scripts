@@ -12,8 +12,11 @@ Options:
   -m --minute=<minute>           Minute on which the task will be executed
   -d --disabled                  Create disabled task (by default tasks are enabled)
 """
+import sys
 
 from docopt import docopt
+from schema import And, Or, Schema, SchemaError, Use
+from scripts.script_commons import validate_user_input
 
 from pythonanywhere.task import Task
 
@@ -24,7 +27,20 @@ def main(command, hour, minute, disabled):
 
 
 if __name__ == "__main__":
-    arguments = docopt(__doc__)
+    schema = Schema(
+        {
+            "--hour": Or(
+                None,
+                And(Use(int), lambda h: 0 <= h <= 23),
+                error="--hour has to be in 0..23",
+            ),
+            "--minute": And(
+                Use(int), lambda m: 0 <= m <= 59, error="--minute has to be in 0..59"
+            ),
+        }
+    )
+    arguments = validate_user_input(docopt(__doc__), schema)
+
     main(
         arguments["--command"],
         int(arguments["--hour"]),

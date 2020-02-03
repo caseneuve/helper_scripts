@@ -53,7 +53,7 @@ def test_calls_all_stuff_in_right_order(mocker):
     ]
     mock_tabulate = mocker.patch("scripts.pa_get_scheduled_tasks_list.tabulate")
 
-    main(fmt="orgtbl", columns=None)
+    main(fmt="orgtbl", columns=None, listfmt=None)
 
     headers = "id", "interval", "at", "enabled", "command"
     attrs = "task_id", "interval", "printable_time", "enabled", "command"

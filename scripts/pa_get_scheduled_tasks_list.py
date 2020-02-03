@@ -3,7 +3,7 @@
 id, interval, at (hour:minute/minute past), enabled, command.
 
 Usage:
-  pa_get_scheduled_tasks_list.py [--format=<format>] [--columns=<comma_separated_cols>]
+  pa_get_scheduled_tasks_list.py [--format=<format>] [--columns=<comma_separated_cols>] [--listfmt]
 
 Options:
   -h --help                      Print this message
@@ -11,6 +11,7 @@ Options:
                                  (defaults to 'simple')
   -c --columns=<columns>         Comma separated columns to display
                                  (defaults to all)
+  -l --listfmt                   Print available table formats
 """
 
 import getpass
@@ -21,6 +22,7 @@ from schema import And, Or, Schema, SchemaError, Use
 from tabulate import tabulate
 
 from pythonanywhere.task import TaskList
+from scripts.script_commons import validate_user_input
 
 headers = "id", "interval", "at", "enabled", "command"
 formats = [
@@ -46,14 +48,18 @@ formats = [
 ]
 
 
-def main(fmt, columns):
-    attrs = "task_id", "interval", "printable_time", "enabled", "command"
-    table = [[getattr(task, attr) for attr in attrs] for task in TaskList().tasks]
-    print(tabulate(table, headers, tablefmt=fmt))
+def main(fmt, columns, listfmt):
+    if listfmt:
+        print("Available table formats are:")
+        for fmt in formats:
+            print(fmt)
+    else:
+        attrs = "task_id", "interval", "printable_time", "enabled", "command"
+        table = [[getattr(task, attr) for attr in attrs] for task in TaskList().tasks]
+        print(tabulate(table, headers, tablefmt=fmt))
 
 
 if __name__ == "__main__":
-    arguments = docopt(__doc__)
     schema = Schema(
         {
             "--format": Or(
@@ -68,12 +74,13 @@ if __name__ == "__main__":
                     ",".join(headers)
                 ),
             ),
+            "--list": Or(None, True),
         }
     )
-    try:
-        arguments = schema.validate(arguments)
-    except SchemaError as e:
-        print(e)
-        sys.exit(1)
+    arguments = validate_user_input(docopt(__doc__), schema)
 
-    main(arguments.get("--format", "simple"), arguments.get("--columns"))
+    main(
+        arguments.get("--format", "simple"),
+        arguments.get("--columns"),
+        arguments.get("--list"),
+    )

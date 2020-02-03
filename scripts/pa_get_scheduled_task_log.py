@@ -11,6 +11,7 @@ Options:
 import getpass
 
 from docopt import docopt
+from schema import Schema
 
 from pythonanywhere.task import Task
 
@@ -27,5 +28,7 @@ def main(task_id):
 
 
 if __name__ == "__main__":
-    arguments = docopt(__doc__)
+    schema = Schema({"<id>": And(int, error="<id> should be an integer")})
+    arguments = validate_user_input(docopt(__doc__), schema)
+
     main(int(arguments["<id>"]))
