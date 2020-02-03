@@ -52,4 +52,9 @@ if __name__ == "__main__":
     )
     arguments = validate_user_input(docopt(__doc__), schema)
 
-    main(**arguments)
+    main(
+        arguments["--command"],
+        arguments["--hour"],
+        arguments["--minute"],
+        arguments["--disabled"],
+    )
