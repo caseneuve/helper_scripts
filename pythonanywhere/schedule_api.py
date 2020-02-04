@@ -61,3 +61,8 @@ class Schedule:
     def get_list(self):
         result = call_api("{base_url}".format(base_url=self.base_url), "GET")
         return result.json()
+
+    def update(self, task_id, params):
+        result = call_api(
+            "{base_url}".format(base_url=self.base_url), "PATCH", json=params
+        )

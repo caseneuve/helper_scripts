@@ -68,6 +68,11 @@ class Task:
                 attr = "task_id"
             setattr(self, attr, value)
 
+    def update_schedule(self, params):
+        # todo: czy tutaj sanity checki dla paramsów?
+        specs = self.schedule.update(params)
+        self.update_specs(specs)
+
 
 class TaskList:
     def __init__(self):

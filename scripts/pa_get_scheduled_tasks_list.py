@@ -62,4 +62,4 @@ if __name__ == "__main__":
     )
     arguments = validate_user_input(docopt(__doc__), schema)
 
-    main(arguments.get("--format", "simple"),)
+    main(arguments.get("--format", "simple"))
