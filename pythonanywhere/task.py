@@ -73,35 +73,41 @@ class Task:
                 attr = "task_id"
             setattr(self, attr, value)
 
-    def update_schedule(self, params):
-        old_specs = {
+    def update_schedule(self, params, logging):
+        specs = {
             "command": self.command,
             "enabled": self.enabled,
             "interval": self.interval,
             "hour": self.hour,
             "minute": self.minute,
         }
-        old_specs.update(params)
+        specs.update(params)
 
-        new_specs = self.schedule.update(self.task_id, old_specs)
-        diff = {
-            key: (getattr(self, key), new_specs[key])
-            for key in old_specs
-            if getattr(self, key) != new_specs[key]
-        }
-        logger.warning(
-            snakesay(
-                "Successfully updated: {} in task {}".format(
-                    ", ".join(
-                        [
-                            "<{}> from '{}' to '{}'".format(k, v[0], v[1])
-                            for k, v in diff.items()
-                        ]
-                    ),
-                    self.task_id,
+        new_specs = self.schedule.update(self.task_id, specs)
+
+        # todo: sprawdzić architekturę logowania i skończyć logikę tutaj
+        if logging != "quiet":
+            diff = {
+                key: (getattr(self, key), new_specs[key])
+                for key in old_specs
+                if getattr(self, key) != new_specs[key]
+            }
+
+            def make_spec_str(key, old_spec, new_spec):
+                return "<{}> from '{}' to '{}'".format(key, old_spec, new_spec)
+
+            updated = [make_spec_str(key, val[0], val[1]) for key, val in diff.items()]
+            intro = "Successfully updated:"
+            if logging == "porcelain":
+                logger.info(intro)
+                for line in updated:
+                    logger.info(line)
+            else:
+                logger.info(
+                    snakesay("{} {} in task {}".format(intro, ", ".join(updated), self.task_id,))
                 )
-            )
-        )
+
+        self.update_specs(new_specs)
 
 
 class TaskList:
