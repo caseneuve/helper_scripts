@@ -27,7 +27,7 @@ example_specs = {
 
 
 @pytest.mark.tasks
-class TestTask:
+class TestTaskToBeCreated:
     def test_instances_new_daily_enabled(self):
         task = Task.to_be_created(
             command="myscript.py", hour=8, minute=10, disabled=False
@@ -48,6 +48,9 @@ class TestTask:
         assert task.interval == "hourly"
         assert task.enabled is False
 
+
+@pytest.mark.tasks
+class TestTaskFromId:
     def test_updates_specs(self, mocker):
         mock_get_specs = mocker.patch("pythonanywhere.schedule_api.Schedule.get_specs")
         specs = dict(**example_specs)
@@ -75,6 +78,9 @@ class TestTask:
         )
         assert task.user == username
 
+
+@pytest.mark.tasks
+class TestTaskCreateSchedule:
     def test_creates_daily_task(self, mocker):
         mock_create = mocker.patch("pythonanywhere.schedule_api.Schedule.create")
         mock_create.return_value = example_specs
@@ -95,6 +101,9 @@ class TestTask:
             }
         )
 
+
+@pytest.mark.tasks
+class TestTaskDeleteSchedule:
     def test_calls_schedule_delete(self, mocker):
         mock_delete = mocker.patch("pythonanywhere.schedule_api.Schedule.delete")
         mock_get_specs = mocker.patch("pythonanywhere.schedule_api.Schedule.get_specs")
@@ -114,19 +123,36 @@ class TestTask:
             Task.to_be_created(command="echo foo", hour=12, minute=78)
         assert str(e.value) == "Minute has to be in 0..59"
 
+
+@pytest.mark.tasks
+class TestTaskUpdateSchedule:
     def test_calls_schedule_update(self, mocker):
         params = {"enabled": True}
         mock_schedule_update = mocker.patch(
             "pythonanywhere.schedule_api.Schedule.update"
         )
-        mock_update_specs = mocker.patch("pythonanywhere.task.Task.update_specs")
+        mock_update_specs = mocker.patch("pythonanywhere.schedule_api.Schedule.update")
         mock_get_specs = mocker.patch("pythonanywhere.schedule_api.Schedule.get_specs")
-        mock_schedule_update.return_value = Mock()
+        mock_update_specs.return_value = {
+            "command": "echo foo",
+            "enabled": False,
+            "interval": "daily",
+            "hour": 10,
+            "minute": 23,
+        }
 
         Task.from_id(task_id=42).update_schedule(params)
 
-        assert mock_schedule_update.call_args == call(params)
-        assert mock_update_specs.call_args == call(mock_schedule_update.return_value)
+        assert mock_update_specs.call_args == call(
+            None,
+            {
+                "command": None,
+                "enabled": True,
+                "interval": None,
+                "minute": None,
+                "hour": None,
+            },
+        )
 
 
 @pytest.mark.tasks

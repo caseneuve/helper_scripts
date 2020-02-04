@@ -1,4 +1,9 @@
+import logging
+
 from pythonanywhere.schedule_api import Schedule
+from pythonanywhere.snakesay import snakesay
+
+logger = logging.getLogger(name=__name__)
 
 
 class Task:
@@ -69,9 +74,34 @@ class Task:
             setattr(self, attr, value)
 
     def update_schedule(self, params):
-        # todo: czy tutaj sanity checki dla paramsów?
-        specs = self.schedule.update(params)
-        self.update_specs(specs)
+        old_specs = {
+            "command": self.command,
+            "enabled": self.enabled,
+            "interval": self.interval,
+            "hour": self.hour,
+            "minute": self.minute,
+        }
+        old_specs.update(params)
+
+        new_specs = self.schedule.update(self.task_id, old_specs)
+        diff = {
+            key: (getattr(self, key), new_specs[key])
+            for key in old_specs
+            if getattr(self, key) != new_specs[key]
+        }
+        logger.warning(
+            snakesay(
+                "Successfully updated: {} in task {}".format(
+                    ", ".join(
+                        [
+                            "<{}> from '{}' to '{}'".format(k, v[0], v[1])
+                            for k, v in diff.items()
+                        ]
+                    ),
+                    self.task_id,
+                )
+            )
+        )
 
 
 class TaskList:

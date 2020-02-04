@@ -14,21 +14,24 @@ Note:
 import getpass
 
 from docopt import docopt
-from schema import And, Schema, Use
 
 from pythonanywhere.scripts_commons import validate_user_input
+from pythonanywhere.snakesay import snakesay
 from pythonanywhere.task import Task
+from schema import And, Schema, Use
 
 
 def main(task_id):
-    filename = Task.from_id(task_id=task_id).logfile
+    try:
+        filename = Task.from_id(task_id=task_id).logfile
 
-    # hack to get user path instead of server path:
-    filename = filename.replace(
-        "/user/{username}/files".format(username=getpass.getuser()), ""
-    )
-
-    print(filename)
+        # hack to get user path instead of server path:
+        filename = filename.replace(
+            "/user/{username}/files".format(username=getpass.getuser()), ""
+        )
+        print(filename)
+    except Exception as e:
+        print(snakesay("Ooops. {e}".format(e=e)))
 
 
 if __name__ == "__main__":
