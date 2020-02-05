@@ -35,7 +35,7 @@ def args():
 
 @pytest.fixture()
 def task_from_id(mocker):
-    task = mocker.patch("scripts.pa_update_scheduled_task.Task.from_id")
+    task = mocker.patch("scripts.pa_update_scheduled_task.get_task_from_id")
     for spec, value in specs.items():
         setattr(task.return_value, spec, value)
     yield task

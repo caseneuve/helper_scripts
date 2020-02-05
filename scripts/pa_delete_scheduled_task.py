@@ -13,8 +13,7 @@ Note:
 
 from docopt import docopt
 
-from pythonanywhere.scripts_commons import Schemata, ScriptSchema, get_task_from_id
-from pythonanywhere.task import Task
+from pythonanywhere.scripts_commons import ScriptSchema, get_task_from_id
 
 
 def main(*, task_id):
@@ -23,7 +22,7 @@ def main(*, task_id):
 
 
 if __name__ == "__main__":
-    schema = ScriptSchema({"<id>": Schemata.id_required})
+    schema = ScriptSchema({"<id>": ScriptSchema.id_required})
     argument = schema.validate_user_input(docopt(__doc__))
 
     main(**argument)

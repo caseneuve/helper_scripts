@@ -6,7 +6,7 @@ from scripts.pa_delete_scheduled_task import main
 
 @pytest.mark.tasks
 def test_calls_all_stuff_in_right_order(mocker):
-    mock_Task_from_id = mocker.patch("scripts.pa_delete_scheduled_task.Task.from_id")
+    mock_Task_from_id = mocker.patch("scripts.pa_delete_scheduled_task.get_task_from_id")
 
     main(task_id=42)
 

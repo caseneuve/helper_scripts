@@ -26,9 +26,8 @@ Note:
 from docopt import docopt
 from tabulate import tabulate
 
-from pythonanywhere.scripts_commons import Schemata, ScriptSchema, get_logger, get_task_from_id
+from pythonanywhere.scripts_commons import ScriptSchema, get_logger, get_task_from_id
 from pythonanywhere.snakesay import snakesay
-from pythonanywhere.task import Task
 
 logger = get_logger(set_info=True)
 
@@ -68,17 +67,17 @@ def main(**kwargs):
 if __name__ == "__main__":
     schema = ScriptSchema(
         {
-            "<id>": Schemata.id_required,
-            "--command": Schemata.boolean,
-            "--enabled": Schemata.boolean,
-            "--expiry": Schemata.boolean,
-            "--hour": Schemata.boolean,
-            "--interval": Schemata.boolean,
-            "--logfile": Schemata.boolean,
-            "--minute": Schemata.boolean,
-            "--printable-time": Schemata.boolean,
-            "--values": Schemata.boolean,
-            "--snakesay": Schemata.boolean,
+            "<id>": ScriptSchema.id_required,
+            "--command": ScriptSchema.boolean,
+            "--enabled": ScriptSchema.boolean,
+            "--expiry": ScriptSchema.boolean,
+            "--hour": ScriptSchema.boolean,
+            "--interval": ScriptSchema.boolean,
+            "--logfile": ScriptSchema.boolean,
+            "--minute": ScriptSchema.boolean,
+            "--printable-time": ScriptSchema.boolean,
+            "--values": ScriptSchema.boolean,
+            "--snakesay": ScriptSchema.boolean,
         }
     )
     arguments = schema.validate_user_input(docopt(__doc__))

@@ -3,6 +3,7 @@ import sys
 
 from schema import And, Or, Schema, SchemaError, Use
 
+from pythonanywhere.snakesay import snakesay
 from pythonanywhere.task import Task
 
 logger = logging.getLogger(__name__)
@@ -30,7 +31,7 @@ tabulate_formats = [
 ]
 
 
-class Schemata:
+class ScriptSchema(Schema):
     boolean = Or(None, bool)
     hour = Or(None, And(Use(int), lambda h: 0 <= h <= 23), error="--hour has to be in 0..23")
     minute = Or(None, And(Use(int), lambda m: 0 <= m <= 59), error="--minute has to be in 0..59")
@@ -43,8 +44,6 @@ class Schemata:
         error="--format should match one of: {}".format(", ".join(tabulate_formats)),
     )
 
-
-class ScriptSchema(Schema):
     def init(self, schema):
         super().__init__(schema=schema)
 

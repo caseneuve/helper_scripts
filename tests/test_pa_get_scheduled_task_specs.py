@@ -37,7 +37,7 @@ def task_from_id(mocker):
         "task_id": 42,
         "username": USER,
     }
-    task = mocker.patch("scripts.pa_get_scheduled_task_specs.Task.from_id")
+    task = mocker.patch("scripts.pa_get_scheduled_task_specs.get_task_from_id")
     for spec, value in specs.items():
         setattr(task.return_value, spec, value)
     yield task

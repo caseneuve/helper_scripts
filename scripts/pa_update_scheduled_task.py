@@ -25,9 +25,8 @@ import logging
 
 from docopt import docopt
 
-from pythonanywhere.scripts_commons import Schemata, ScriptSchema, get_logger, get_task_from_id
+from pythonanywhere.scripts_commons import ScriptSchema, get_logger, get_task_from_id
 from pythonanywhere.snakesay import snakesay
-from pythonanywhere.task import Task
 
 logger = get_logger()
 
@@ -61,15 +60,15 @@ def main(**kwargs):
 if __name__ == "__main__":
     schema = ScriptSchema(
         {
-            "<id>": Schemata.id_required,
-            "--command": Schemata.string,
-            "--hour": Schemata.hour,
-            "--minute": Schemata.minute,
-            "--disable": Schemata.boolean,
-            "--enable": Schemata.boolean,
-            "--toggle": Schemata.boolean,
-            "--quiet": Schemata.boolean,
-            "--porcelain": Schemata.boolean,
+            "<id>": ScriptSchema.id_required,
+            "--command": ScriptSchema.string,
+            "--hour": ScriptSchema.hour,
+            "--minute": ScriptSchema.minute,
+            "--disable": ScriptSchema.boolean,
+            "--enable": ScriptSchema.boolean,
+            "--toggle": ScriptSchema.boolean,
+            "--quiet": ScriptSchema.boolean,
+            "--porcelain": ScriptSchema.boolean,
         }
     )
     arguments = schema.validate_user_input(docopt(__doc__))

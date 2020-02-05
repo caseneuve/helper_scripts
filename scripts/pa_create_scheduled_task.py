@@ -24,7 +24,7 @@ Example:
 
 from docopt import docopt
 
-from pythonanywhere.scripts_commons import Schemata, ScriptSchema
+from pythonanywhere.scripts_commons import ScriptSchema
 from pythonanywhere.task import Task
 
 
@@ -38,9 +38,9 @@ if __name__ == "__main__":
     schema = ScriptSchema(
         {
             "--command": str,
-            "--hour": Schemata.hour,
-            "--minute": Schemata.minute,
-            "--disabled": Schemata.boolean,
+            "--hour": ScriptSchema.hour,
+            "--minute": ScriptSchema.minute,
+            "--disabled": ScriptSchema.boolean,
         }
     )
     arguments = schema.validate_user_input(docopt(__doc__))

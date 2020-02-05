@@ -15,7 +15,7 @@ import logging
 from docopt import docopt
 from tabulate import tabulate
 
-from pythonanywhere.scripts_commons import Schemata, ScriptSchema, get_logger
+from pythonanywhere.scripts_commons import ScriptSchema, get_logger
 from pythonanywhere.task import TaskList
 
 logger = get_logger(set_info=True)
@@ -29,7 +29,7 @@ def main(tablefmt):
 
 
 if __name__ == "__main__":
-    schema = ScriptSchema({"--format": Schemata.tabulate_format})
+    schema = ScriptSchema({"--format": ScriptSchema.tabulate_format})
     argument = schema.validate_user_input(docopt(__doc__))
 
     main(argument.get("format", "simple"))
