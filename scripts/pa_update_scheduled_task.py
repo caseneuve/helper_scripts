@@ -20,39 +20,45 @@ Options:
 Example: #todo:
 
 """
+import logging
+
 from docopt import docopt
+from schema import And, Or, Schema, Use
 
 from pythonanywhere.scripts_commons import validate_user_input
 from pythonanywhere.snakesay import snakesay
 from pythonanywhere.task import Task
-from schema import And, Or, Schema, Use
+
+logger = logging.getLogger(name=__name__)
 
 
 def main(task_id, **kwargs):
-    def parse_opts(opts, fallback):
-        candidates = [key for key in opts if kwargs.pop(key)]
-        return candidates[0] if candidates else fallback
+    print(kwargs)
 
-    logging = parse_opts(("quiet", "porcelain"), "full")
-    visibility = parse_opts(("toggle", "disable", "enable"), None)
+    def parse_opts(*opts):
+        candidates = [key for key in opts if kwargs.pop(key)]
+        return candidates[0] if candidates else None
+
+    logging_level = parse_opts("quiet", "porcelain")
+    # if logging_level != "quiet":
+    #     logger.setLevel(logging.INFO)
+
+    enable_opt = parse_opts("toggle", "disable", "enable")
+    print(enable_opt)
 
     task = Task.from_id(task_id)
 
     params = {key: val for key, val in kwargs.items() if val}
+    if enable_opt:
+        enable_opt = {"toggle": not task.enabled, "disable": False, "enable": True}[enable_opt]
+        params.update({"enabled": enable_opt})
 
-    if visibility:
-        params.update(
-            {"enabled": {"toggle": not task.enabled, "disable": False, "enable": True}[visibility]}
-        )
-    # print(params)
+    print(params)
 
     try:
-        task.update_schedule(params, logging=logging)
+        task.update_schedule(params, logging_level=logging_level)
     except Exception as e:
-        if logging != "porcelain":
-            print(snakesay(str(e)))
-        else:
-            print(str(e))
+        print(str(e))
 
 
 if __name__ == "__main__":

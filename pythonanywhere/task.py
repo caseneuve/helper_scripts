@@ -73,7 +73,7 @@ class Task:
                 attr = "task_id"
             setattr(self, attr, value)
 
-    def update_schedule(self, params, logging):
+    def update_schedule(self, params, logging_level):
         specs = {
             "command": self.command,
             "enabled": self.enabled,
@@ -83,9 +83,12 @@ class Task:
         }
         specs.update(params)
 
+        print("task: specs {}".format(specs))
+
         new_specs = self.schedule.update(self.task_id, specs)
 
-        # todo: sprawdzić architekturę logowania i skończyć logikę tutaj
+        print("task: new specs")
+
         diff = {
             key: (getattr(self, key), new_specs[key])
             for key in specs
@@ -96,16 +99,18 @@ class Task:
             return "<{}> from '{}' to '{}'".format(key, old_spec, new_spec)
 
         updated = [make_spec_str(key, val[0], val[1]) for key, val in diff.items()]
-        if updated:
-            intro = "Successfully updated:"
-            if logging == "porcelain":
-                logger.warning(intro)
-                for line in updated:
-                    logger.warning(line)
-            else:
-                logger.warning(
-                    snakesay("{} {} in task {}".format(intro, ", ".join(updated), self.task_id))
-                )
+
+        def make_msg(join_by):
+            intro = "Task {} updated:\n".format(self.task_id)
+            return "{} {}".format(intro, join_by.join(updated))
+
+        if logging_level != "quiet":
+            logger.setLevel(logging.INFO)
+
+        if updated and logging_level == "porcelain":
+            logger.info(make_msg("\n"))
+        elif updated:
+            logger.info(snakesay(make_msg(", ")))
         else:
             logger.warning("Nothing to update!")
 

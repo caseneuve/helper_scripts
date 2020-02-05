@@ -51,15 +51,12 @@ def main(fmt):
 
 
 if __name__ == "__main__":
-    schema = Schema(
-        {
-            "--format": Or(
-                None,
-                And(str, lambda f: f in formats),
-                error="--format should match one of: {}".format(", ".join(formats)),
-            )
-        }
+    Format = Or(
+        None,
+        And(str, lambda f: f in formats),
+        error="--format should match one of: {}".format(", ".join(formats)),
     )
+    schema = Schema({"--format": Format})
     arguments = validate_user_input(docopt(__doc__), schema)
 
     main(arguments.get("--format", "simple"))
