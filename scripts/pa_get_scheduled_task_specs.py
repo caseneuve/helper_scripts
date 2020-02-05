@@ -23,19 +23,21 @@ Note:
   Task <id> may be found using pa_get_scheduled_tasks_list.py script.
 """
 
-import logging
+# import logging
 import sys
 
 from docopt import docopt
+from schema import And, Or, Schema, Use
 from tabulate import tabulate
 
-from pythonanywhere.scripts_commons import validate_user_input
+from pythonanywhere.scripts_commons import get_logger, validate_user_input
 from pythonanywhere.snakesay import snakesay
 from pythonanywhere.task import Task
-from schema import And, Or, Schema, Use
 
-logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout)
-logger = logging.getLogger(__name__)
+# logging.basicConfig(format="%(message)s", stream=sys.stdout)
+# logger = logging.getLogger("pythonanywhere")
+# logger.setLevel(logging.INFO)
+logger = get_logger(set_info=True)
 
 
 def main(task_id, **kwargs):

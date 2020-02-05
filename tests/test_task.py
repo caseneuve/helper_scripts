@@ -127,7 +127,7 @@ class TestTaskUpdateSchedule:
             "minute": 23,
         }
 
-        Task.from_id(task_id=42).update_schedule(params, "full")
+        Task.from_id(task_id=42).update_schedule(params, porcelain=True)
 
         assert mock_update_specs.call_args == call(
             None,

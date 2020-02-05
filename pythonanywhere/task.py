@@ -61,8 +61,21 @@ class Task:
         if self.hour:
             params["hour"] = self.hour
 
-        info = self.schedule.create(params)
-        self.update_specs(info)
+        specs = self.schedule.create(params)
+        self.update_specs(specs)
+
+        mode = "will" if self.enabled else "may be enabled to"
+        msg = (
+            "Task '{command}' succesfully created with id {task_id} "
+            "and {mode} be run {interval} at {printable_time}"
+        ).format(
+            command=self.command,
+            task_id=self.task_id,
+            mode=mode,
+            interval=self.interval,
+            printable_time=self.printable_time,
+        )
+        logger.info(snakesay(msg))
 
     def delete_schedule(self):
         self.schedule.delete(self.task_id)
@@ -73,7 +86,7 @@ class Task:
                 attr = "task_id"
             setattr(self, attr, value)
 
-    def update_schedule(self, params, logging_level):
+    def update_schedule(self, params, porcelain):
         specs = {
             "command": self.command,
             "enabled": self.enabled,
@@ -99,17 +112,14 @@ class Task:
 
         updated = [make_spec_str(key, val[0], val[1]) for key, val in diff.items()]
 
-        def make_msg(join_by):
+        def make_msg(join_with):
             intro = "Task {} updated:\n".format(self.task_id)
-            return "{} {}".format(intro, join_by.join(updated))
+            return "{} {}".format(intro, join_with.join(updated))
 
-        if logging_level != "quiet":
-            logger.setLevel(logging.INFO)
-
-        if updated and logging_level == "porcelain":
-            logger.info(make_msg("\n"))
+        if updated and porcelain:
+            logger.info(make_msg(join_with="\n"))
         elif updated:
-            logger.info(snakesay(make_msg(", ")))
+            logger.info(snakesay(make_msg(join_with=", ")))
         else:
             logger.warning("Nothing to update!")
 
