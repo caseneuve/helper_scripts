@@ -83,6 +83,9 @@ class Task:
         }
         specs.update(params)
 
+        if specs["interval"] != "daily":
+            specs.pop("hour")
+
         print("task: specs {}".format(specs))
 
         new_specs = self.schedule.update(self.task_id, specs)

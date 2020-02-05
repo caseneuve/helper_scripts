@@ -2,9 +2,7 @@
 """Update a scheduled task.
 
 Usage:
-  pa_update_scheduled_task.py <id> [--command=CMD] [--hour=HOUR] [--minute=MINUTE]
-  pa_update_scheduled_task.py <id> [--disable | --enable | --toggle]
-  pa_update_scheduled_task.py <id> [--quiet | --porcelain]
+  pa_update_scheduled_task.py <id> [--command=CMD] [--hour=HOUR] [--minute=MINUTE] [--disable | --enable | --toggle] [--quiet | --porcelain]
 
 Options:
   -h --help                      Print this message
@@ -21,14 +19,16 @@ Example: #todo:
 
 """
 import logging
+import sys
 
 from docopt import docopt
-from schema import And, Or, Schema, Use
 
 from pythonanywhere.scripts_commons import validate_user_input
 from pythonanywhere.snakesay import snakesay
 from pythonanywhere.task import Task
+from schema import And, Or, Schema, Use
 
+logging.basicConfig(format="%(message)s", stream=sys.stdout)
 logger = logging.getLogger(name=__name__)
 
 
@@ -40,8 +40,8 @@ def main(task_id, **kwargs):
         return candidates[0] if candidates else None
 
     logging_level = parse_opts("quiet", "porcelain")
-    # if logging_level != "quiet":
-    #     logger.setLevel(logging.INFO)
+    if logging_level != "quiet":
+        logging.basicConfig(level=logging.INFO)
 
     enable_opt = parse_opts("toggle", "disable", "enable")
     print(enable_opt)
@@ -53,12 +53,10 @@ def main(task_id, **kwargs):
         enable_opt = {"toggle": not task.enabled, "disable": False, "enable": True}[enable_opt]
         params.update({"enabled": enable_opt})
 
-    print(params)
-
     try:
         task.update_schedule(params, logging_level=logging_level)
     except Exception as e:
-        print(str(e))
+        logger.warning(snakesay(str(e)))
 
 
 if __name__ == "__main__":
