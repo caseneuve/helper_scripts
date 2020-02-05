@@ -4,7 +4,7 @@ Available specs are: command, enabled, interval, hour, minute.
 If no option specified, script will output all mentioned specs.
 
 Usage:
-  pa_get_scheduled_task_specs.py <id> [--command] [--enabled] [--interval] [--hour] [--minute] [--printable-time] [--logfile] [--expiry] [--snakesay]
+  pa_get_scheduled_task_specs.py <id> [--command] [--enabled] [--interval] [--hour] [--minute] [--printable-time] [--logfile] [--expiry] [--snakesay | --values]
 
 Options:
   -h --help                      Prints this message
@@ -16,6 +16,7 @@ Options:
   -o --hour                      Prints task's scheduled hour (if daily)
   -p --printable-time            Prints task's scheduled time
   -x --expiry                    Prints task's expiry date
+  -v --values                    Prints only values without spec names
   -s --snakesay                  Turns on snakesay... because why not
 
 Note:
@@ -33,8 +34,7 @@ from pythonanywhere.snakesay import snakesay
 from pythonanywhere.task import Task
 from schema import And, Or, Schema, Use
 
-
-logging.basicConfig(level=logging.INFO, format="%(message)s")
+logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout)
 logger = logging.getLogger(__name__)
 
 
@@ -46,6 +46,7 @@ def main(task_id, **kwargs):
         sys.exit(1)
 
     snake = kwargs.pop("snake")
+    values = kwargs.pop("values")
 
     specs = (
         {spec: getattr(task, spec) for spec in kwargs if kwargs[spec]}
@@ -55,10 +56,13 @@ def main(task_id, **kwargs):
 
     # get user path instead of server path:
     if specs.get("logfile"):
-        specs.update({"logfile": task.logfile.replace("/user/{}".format(task.user), "")})
+        specs.update({"logfile": task.logfile.replace("/user/{}/files".format(task.user), "")})
 
     intro = "Task {} specs: ".format(task_id)
-    if snake:
+    if values:
+        specs = "\n".join([str(val) for val in specs.values()])
+        logger.info(specs)
+    elif snake:
         specs = ["<{}>: {}".format(spec, value) for spec, value in specs.items()]
         specs.sort()
         logger.info(snakesay(intro + ", ".join(specs)))
@@ -82,6 +86,7 @@ if __name__ == "__main__":
             "--logfile": Boolean,
             "--minute": Boolean,
             "--printable-time": Boolean,
+            "--values": Boolean,
             "--snakesay": Boolean,
         }
     )
@@ -96,6 +101,7 @@ if __name__ == "__main__":
         interval=arguments["--interval"],
         logfile=arguments["--logfile"],
         minute=arguments["--minute"],
+        values=arguments["--values"],
         printable_time=arguments["--printable-time"],
         snake=arguments["--snakesay"],
     )
