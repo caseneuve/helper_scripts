@@ -1,7 +1,8 @@
 from unittest.mock import call
 
 import pytest
-from pythonanywhere.scripts_commons import ScriptSchema, SchemaError, tabulate_formats
+
+from pythonanywhere.scripts_commons import SchemaError, ScriptSchema, get_logger, tabulate_formats
 from pythonanywhere.snakesay import snakesay
 
 
@@ -121,3 +122,21 @@ class TestScriptSchemaConvert:
 
     def test_returns_unchanged_string(self):
         assert ScriptSchema.convert("will_not_be_changed") == "will_not_be_changed"
+
+
+@pytest.mark.tasks
+@pytest.mark.suspicious
+class TestGetLogger:
+    """ CHECK: level powinien być różny w zależności od opcji set_info"""
+
+    def test_returns_pa_logger(self):
+        logger = get_logger()
+
+        assert logger.name == "pythonanywhere"
+        assert logger.level == 20
+
+    def test_returns_pa_logger_info(self):
+        logger = get_logger(set_info=True)
+
+        assert logger.name == "pythonanywhere"
+        assert logger.level == 20
