@@ -12,9 +12,8 @@ Note:
 """
 
 from docopt import docopt
-from schema import And, Schema, Use
 
-from pythonanywhere.scripts_commons import validate_user_input
+from pythonanywhere.scripts_commons import Schemata, ScriptSchema
 from pythonanywhere.task import Task
 
 

@@ -10,23 +10,26 @@ Options:
   -f --format=<format>           Table format supported by tabulate
                                  (defaults to 'simple')
 """
+import logging
 
 from docopt import docopt
 from tabulate import tabulate
 
-from pythonanywhere.scripts_commons import Schemata, ScriptSchema
+from pythonanywhere.scripts_commons import Schemata, ScriptSchema, get_logger
 from pythonanywhere.task import TaskList
+
+logger = get_logger(set_info=True)
 
 
 def main(tablefmt):
     headers = "id", "interval", "at", "enabled", "command"
     attrs = "task_id", "interval", "printable_time", "enabled", "command"
     table = [[getattr(task, attr) for attr in attrs] for task in TaskList().tasks]
-    print(tabulate(table, headers, tablefmt=tablefmt))
+    logger.info(tabulate(table, headers, tablefmt=tablefmt))
 
 
 if __name__ == "__main__":
     schema = ScriptSchema({"--format": Schemata.tabulate_format})
     argument = schema.validate_user_input(docopt(__doc__))
 
-    main(arguments.get("format", "simple"))
+    main(argument.get("format", "simple"))

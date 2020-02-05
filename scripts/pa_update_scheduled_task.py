@@ -46,7 +46,11 @@ def main(**kwargs):
     porcelain = parse_opts("porcelain")
     enable_opt = parse_opts("toggle", "disable", "enable")
 
-    task = Task.from_id(task_id)
+    try:
+        task = Task.from_id(task_id)
+    except Exception as e:
+        logger.warning(snakesay(str(e)))
+        sys.exit(1)
 
     params = {key: val for key, val in kwargs.items() if val}
     if enable_opt:
