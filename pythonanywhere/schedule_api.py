@@ -55,7 +55,7 @@ class Schedule:
         else:
             raise Exception(
                 "Could not get task with id {task_id}. Got result {result}: {content}".format(
-                    task_id=task_id, result=result, content=str(result.content)
+                    task_id=task_id, result=result, content=result.content.decode("utf-8")
                 )
             )
 
@@ -74,6 +74,6 @@ class Schedule:
         else:
             raise Exception(
                 "Could not update task {task_id}. Got {result}: {content}".format(
-                    task_id=task_id, result=result, content=str(result.content)
+                    task_id=task_id, result=result, content=result.content.decode("utf-8")
                 )
             )
