@@ -13,12 +13,14 @@ class Schedule:
 
         if result.status_code == 201:
             specs = result.json()
+            msg = "will" if specs["enabled"] else "may be enabled to"
             print(
                 snakesay(
                     "Task '{command}' succesfully created with id {id_} "
-                    "and will be run {interval} at {printable_time}".format(
+                    "and {msg} be run {interval} at {printable_time}".format(
                         command=specs["command"],
                         id_=specs["id"],
+                        msg=msg,
                         interval=specs["interval"],
                         printable_time=specs["printable_time"],
                     )

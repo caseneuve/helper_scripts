@@ -1,8 +1,11 @@
 #!/usr/bin/python3.5
-"""Update a scheduled task.
+"""Update a scheduled task. Note that logfile name will change after updating the task
+but it won't be created until first execution of the task.
 
 Usage:
-  pa_update_scheduled_task.py <id> [--command=CMD] [--hour=HOUR] [--minute=MINUTE] [--disable | --enable | --toggle] [--quiet | --porcelain]
+  pa_update_scheduled_task.py <id> [--command=CMD] [--hour=HOUR] [--minute=MINUTE]
+                                   [--disable | --enable | --toggle]
+                                   [--quiet | --porcelain]
 
 Options:
   -h --help                      Print this message
