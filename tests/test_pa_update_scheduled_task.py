@@ -21,6 +21,7 @@ specs = {
 @pytest.fixture()
 def args():
     yield {
+        "task_id": 42,
         "command": None,
         "hour": None,
         "minute": None,
@@ -49,7 +50,7 @@ def test_enables_task(task_from_id, args, mocker):
     mock_schedule_update.return_value.json.return_value = specs.update({"enabled": True})
     args.update({"enable": True})
 
-    main(42, **args)
+    main(**args)
 
     print(mock_schedule_update.call_args)
     # assert mock_schedule_update.call_args == call(args)

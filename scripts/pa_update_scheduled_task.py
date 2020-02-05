@@ -25,25 +25,25 @@ import logging
 import sys
 
 from docopt import docopt
-
-from pythonanywhere.scripts_commons import validate_user_input
-from pythonanywhere.snakesay import snakesay
-from pythonanywhere.task import Task
 from schema import And, Or, Schema, Use
 
-logging.basicConfig(format="%(message)s", stream=sys.stdout)
-logger = logging.getLogger(name=__name__)
+from pythonanywhere.scripts_commons import get_logger, validate_user_input
+from pythonanywhere.snakesay import snakesay
+from pythonanywhere.task import Task
+
+logger = get_logger()
 
 
-def main(task_id, **kwargs):
+def main(**kwargs):
     def parse_opts(*opts):
         candidates = [key for key in opts if kwargs.pop(key)]
         return candidates[0] if candidates else None
 
-    logging_level = parse_opts("quiet", "porcelain")
-    if logging_level != "quiet":
-        logging.basicConfig(level=logging.INFO)
+    if not parse_opts("quiet"):
+        logger.setLevel(logging.INFO)
 
+    task_id = parse_opts("task_id")
+    porcelain = parse_opts("porcelain")
     enable_opt = parse_opts("toggle", "disable", "enable")
 
     task = Task.from_id(task_id)
@@ -54,38 +54,25 @@ def main(task_id, **kwargs):
         params.update({"enabled": enable_opt})
 
     try:
-        task.update_schedule(params, logging_level=logging_level)
+        task.update_schedule(params, porcelain)
     except Exception as e:
         logger.warning(snakesay(str(e)))
 
 
 if __name__ == "__main__":
-    Boolean = Or(None, bool)
-    Hour = Or(None, And(Use(int), lambda h: 0 <= h <= 23), error="--hour has to be in 0..23")
-    Minute = Or(None, And(Use(int), lambda m: 0 <= m <= 59), error="--minute has to be in 0..59")
-    schema = Schema(
+    schema = ScriptSchema(
         {
-            "<id>": And(Use(int), error="<id> has to be an integer"),
-            "--command": Or(None, str),
-            "--hour": Hour,
-            "--minute": Minute,
-            "--disable": Boolean,
-            "--enable": Boolean,
-            "--toggle": Boolean,
-            "--quiet": Boolean,
-            "--porcelain": Boolean,
+            "<id>": Schemata.id_required,
+            "--command": Schemata.string,
+            "--hour": Schemata.hour,
+            "--minute": Schemata.minute,
+            "--disable": Schemata.boolean,
+            "--enable": Schemata.boolean,
+            "--toggle": Schemata.boolean,
+            "--quiet": Schemata.boolean,
+            "--porcelain": Schemata.boolean,
         }
     )
-    arguments = validate_user_input(docopt(__doc__), schema)
+    arguments = schema.validate_user_input(docopt(__doc__))
 
-    main(
-        arguments["<id>"],
-        command=arguments["--command"],
-        hour=arguments["--hour"],
-        minute=arguments["--minute"],
-        disable=arguments["--disable"],
-        enable=arguments["--enable"],
-        toggle=arguments["--toggle"],
-        quiet=arguments["--quiet"],
-        porcelain=arguments["--porcelain"],
-    )
+    main(**arguments)
