@@ -34,8 +34,8 @@ tabulate_formats = [
 class ScriptSchema(Schema):
     boolean = Or(None, bool)
     hour = Or(None, And(Use(int), lambda h: 0 <= h <= 23), error="--hour has to be in 0..23")
-    minute = Or(None, And(Use(int), lambda m: 0 <= m <= 59), error="--minute has to be in 0..59")
     minute_required = And(Use(int), lambda m: 0 <= m <= 59, error="--minute has to be in 0..59")
+    minute = Or(None, minute_required)
     id_required = And(Use(int), error="<id> has to be an integer")
     string = Or(None, str)
     tabulate_format = Or(
@@ -56,8 +56,8 @@ class ScriptSchema(Schema):
             "snakesay": "snake",
             "id": "task_id",
         }
-        for k, v in to_be_replaced.items():
-            string = string.replace(k, v)
+        for key, value in to_be_replaced.items():
+            string = string.replace(key, value)
         return string
 
     def validate_user_input(self, arguments):
@@ -65,7 +65,7 @@ class ScriptSchema(Schema):
             self.validate(arguments)
             return {self.convert(key): val for key, val in arguments.items()}
         except SchemaError as e:
-            print(e)
+            logger.warning(snakesay(str(e)))
             sys.exit(1)
 
 
