@@ -34,14 +34,15 @@ logger = get_logger()
 
 
 def main(**kwargs):
+    task_id = kwargs.pop("task_id")
+
     def parse_opts(*opts):
-        candidates = [key for key in opts if kwargs.pop(key)]
+        candidates = [key for key in opts if kwargs.pop(key, None)]
         return candidates[0] if candidates else None
 
     if not parse_opts("quiet"):
         logger.setLevel(logging.INFO)
 
-    task_id = parse_opts("task_id")
     porcelain = parse_opts("porcelain")
     enable_opt = parse_opts("toggle", "disable", "enable")
 
