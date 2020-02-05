@@ -1,8 +1,15 @@
+import getpass
 from unittest.mock import call
 
 import pytest
 
-from pythonanywhere.scripts_commons import SchemaError, ScriptSchema, get_logger, tabulate_formats
+from pythonanywhere.scripts_commons import (
+    SchemaError,
+    ScriptSchema,
+    get_logger,
+    get_task_from_id,
+    tabulate_formats,
+)
 from pythonanywhere.snakesay import snakesay
 
 
@@ -140,3 +147,45 @@ class TestGetLogger:
 
         assert logger.name == "pythonanywhere"
         assert logger.level == 20
+
+
+@pytest.mark.tasks
+class TestGetTaskFromId:
+    def test_returns_task(self, mocker):
+        user = getpass.getuser()
+        specs = {
+            "can_enable": False,
+            "command": "echo foo",
+            "enabled": True,
+            "hour": 10,
+            "interval": "daily",
+            "logfile": "/user/{}/files/foo".format(user),
+            "minute": 23,
+            "printable_time": "10:23",
+            "task_id": 42,
+            "username": user,
+        }
+        mock_task = mocker.patch("pythonanywhere.scripts_commons.Task.from_id")
+        for spec, value in specs.items():
+            setattr(mock_task.return_value, spec, value)
+
+        task = get_task_from_id(42)
+
+        for spec, value in specs.items():
+            assert getattr(task, spec) == value
+
+    def test_catches_exception(self, mocker):
+        mock_exit = mocker.patch("pythonanywhere.scripts_commons.sys.exit")
+        mock_snakesay = mocker.patch("pythonanywhere.scripts_commons.snakesay")
+        mock_warning = mocker.patch("pythonanywhere.scripts_commons.logger.warning")
+
+        get_task_from_id(1)
+
+        assert mock_exit.call_args == call(1)
+        assert mock_warning.call_count == 1
+        assert mock_snakesay.call_args == call(
+            "Oops, you don't seem to have an API token.  Please go to the 'Account' page on "
+            "PythonAnywhere, then to the 'API Token' tab.  Click the 'Create a new API token' "
+            "button to create the token, then start a new console and try running this script "
+            "again."
+        )
