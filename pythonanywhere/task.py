@@ -86,11 +86,7 @@ class Task:
         if specs["interval"] != "daily":
             specs.pop("hour")
 
-        print("task: specs {}".format(specs))
-
         new_specs = self.schedule.update(self.task_id, specs)
-
-        print("task: new specs")
 
         diff = {
             key: (getattr(self, key), new_specs[key])

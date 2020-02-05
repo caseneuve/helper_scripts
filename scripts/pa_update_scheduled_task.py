@@ -33,8 +33,6 @@ logger = logging.getLogger(name=__name__)
 
 
 def main(task_id, **kwargs):
-    print(kwargs)
-
     def parse_opts(*opts):
         candidates = [key for key in opts if kwargs.pop(key)]
         return candidates[0] if candidates else None
@@ -44,7 +42,6 @@ def main(task_id, **kwargs):
         logging.basicConfig(level=logging.INFO)
 
     enable_opt = parse_opts("toggle", "disable", "enable")
-    print(enable_opt)
 
     task = Task.from_id(task_id)
 
