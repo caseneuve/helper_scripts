@@ -113,6 +113,7 @@ class TestTaskDeleteSchedule:
 
 
 @pytest.mark.tasks
+@pytest.mark.xfail
 class TestTaskUpdateSchedule:
     def test_calls_schedule_update(self, mocker):
         params = {"enabled": True}

@@ -26,8 +26,8 @@ class Task:
     @classmethod
     def from_id(cls, task_id):
         task = cls()
-        info = task.schedule.get_specs(task_id)
-        task.update_specs(info)
+        specs = task.schedule.get_specs(task_id)
+        task.update_specs(specs)
         return task
 
     @classmethod

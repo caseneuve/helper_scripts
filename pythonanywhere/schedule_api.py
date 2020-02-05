@@ -53,7 +53,7 @@ class Schedule:
 
     def update(self, task_id, params):
         result = call_api(
-            "{base_url}{task_id}/".format(task_id=task_id, base_url=self.base_url),
+            "{base_url}{task_id}/".format(base_url=self.base_url, task_id=task_id),
             "PATCH",
             json=params,
         )
