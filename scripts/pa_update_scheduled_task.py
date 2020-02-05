@@ -22,11 +22,10 @@ Example: #todo:
 
 """
 import logging
-import sys
 
 from docopt import docopt
 
-from pythonanywhere.scripts_commons import Schemata, ScriptSchema, get_logger
+from pythonanywhere.scripts_commons import Schemata, ScriptSchema, get_logger, get_task_from_id
 from pythonanywhere.snakesay import snakesay
 from pythonanywhere.task import Task
 
@@ -46,11 +45,7 @@ def main(**kwargs):
     porcelain = parse_opts("porcelain")
     enable_opt = parse_opts("toggle", "disable", "enable")
 
-    try:
-        task = Task.from_id(task_id)
-    except Exception as e:
-        logger.warning(snakesay(str(e)))
-        sys.exit(1)
+    task = get_task_from_id(task_id)
 
     params = {key: val for key, val in kwargs.items() if val}
     if enable_opt:

@@ -1,7 +1,11 @@
 import logging
 import sys
 
-from schema import SchemaError, Schema, Or, And, Use
+from schema import And, Or, Schema, SchemaError, Use
+
+from pythonanywhere.task import Task
+
+logger = logging.getLogger(__name__)
 
 tabulate_formats = [
     "plain",
@@ -66,17 +70,17 @@ class ScriptSchema(Schema):
             sys.exit(1)
 
 
-def validate_user_input(arguments, schema):
-    try:
-        return schema.validate(arguments)
-    except SchemaError as e:
-        print(e)
-        sys.exit(1)
-
-
 def get_logger(set_info=False):
     logging.basicConfig(format="%(message)s", stream=sys.stdout)
     logger = logging.getLogger("pythonanywhere")
     if set_info:
         logger.setLevel(logging.INFO)
     return logger
+
+
+def get_task_from_id(task_id):
+    try:
+        return Task.from_id(task_id)
+    except Exception as e:
+        logger.warning(snakesay(str(e)))
+        sys.exit(1)

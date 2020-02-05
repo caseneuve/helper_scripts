@@ -13,12 +13,12 @@ Note:
 
 from docopt import docopt
 
-from pythonanywhere.scripts_commons import Schemata, ScriptSchema
+from pythonanywhere.scripts_commons import Schemata, ScriptSchema, get_task_from_id
 from pythonanywhere.task import Task
 
 
 def main(*, task_id):
-    task = Task.from_id(task_id)
+    task = get_task_from_id(task_id)
     task.delete_schedule()
 
 

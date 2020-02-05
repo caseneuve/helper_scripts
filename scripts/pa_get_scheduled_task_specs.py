@@ -23,12 +23,10 @@ Note:
   Task <id> may be found using pa_get_scheduled_tasks_list.py script.
 """
 
-import sys
-
 from docopt import docopt
 from tabulate import tabulate
 
-from pythonanywhere.scripts_commons import Schemata, ScriptSchema, get_logger
+from pythonanywhere.scripts_commons import Schemata, ScriptSchema, get_logger, get_task_from_id
 from pythonanywhere.snakesay import snakesay
 from pythonanywhere.task import Task
 
@@ -37,12 +35,7 @@ logger = get_logger(set_info=True)
 
 def main(**kwargs):
     task_id = kwargs.pop("task_id")
-
-    try:
-        task = Task.from_id(task_id)
-    except Exception as e:
-        print(snakesay("Ooops. {}".format(e)))
-        sys.exit(1)
+    task = get_task_from_id(task_id)
 
     print_snake = kwargs.pop("snake")
     print_only_values = kwargs.pop("values")
