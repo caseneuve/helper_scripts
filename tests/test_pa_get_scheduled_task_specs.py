@@ -63,16 +63,17 @@ class TestGetScheduledTaskSpecs:
         )
 
     def test_prints_all_specs_using_snakesay(self, task_from_id, args, mocker):
-
+        args.update({"snake": True})
         mock_snakesay = mocker.patch("scripts.pa_get_scheduled_task_specs.snakesay")
 
         main(42, **args)
 
         assert task_from_id.call_args == call(42)
-        assert mock_snakesay.call_args == call(
+        expected = (
             "Task 42 specs: <command>: echo foo, <enabled>: True, <hour>: 10, <interval>: daily, "
             "<logfile>: /user/{}/files/foo, <minute>: 23, <printable_time>: 10:23".format(USER)
         )
+        assert mock_snakesay.call_args == call(expected)
 
     def test_prints_one_spec(self, task_from_id, args, mocker):
         args.update({"command": True})
