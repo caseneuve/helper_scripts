@@ -4,7 +4,7 @@ Available specs are: command, enabled, interval, hour, minute.
 If no option specified, script will output all mentioned specs.
 
 Usage:
-  pa_get_scheduled_task_specs.py <id> [--command] [--enabled] [--interval] [--hour] [--minute] [--printable-time] [--logfile] [--snakesay]
+  pa_get_scheduled_task_specs.py <id> [--command] [--enabled] [--interval] [--hour] [--minute] [--printable-time] [--logfile] [--expiry] [--snakesay]
 
 Options:
   -h --help                      Prints this message
@@ -15,6 +15,7 @@ Options:
   -m --minute                    Prints task's scheduled minute
   -o --hour                      Prints task's scheduled hour (if daily)
   -p --printable-time            Prints task's scheduled time
+  -x --expiry                    Prints task's expiry date
   -s --snakesay                  Turns on snakesay... because why not
 
 Note:
@@ -32,8 +33,9 @@ from pythonanywhere.snakesay import snakesay
 from pythonanywhere.task import Task
 from schema import And, Or, Schema, Use
 
-logger = logging.getLogger(name=__name__)
-logger.setLevel(logging.INFO)
+
+logging.basicConfig(level=logging.INFO, format="%(message)s")
+logger = logging.getLogger(__name__)
 
 
 def main(task_id, **kwargs):
@@ -52,8 +54,8 @@ def main(task_id, **kwargs):
     )
 
     # get user path instead of server path:
-    if kwargs["logfile"]:
-        specs.update({"logfile": task.logfile.replace("/user/{}".format(task.username), "")})
+    if specs.get("logfile"):
+        specs.update({"logfile": task.logfile.replace("/user/{}".format(task.user), "")})
 
     intro = "Task {} specs: ".format(task_id)
     if snake:
@@ -74,6 +76,7 @@ if __name__ == "__main__":
             "<id>": And(Use(int), error="<id> should be an integer"),
             "--command": Boolean,
             "--enabled": Boolean,
+            "--expiry": Boolean,
             "--hour": Boolean,
             "--interval": Boolean,
             "--logfile": Boolean,
@@ -86,8 +89,9 @@ if __name__ == "__main__":
 
     main(
         int(arguments["<id>"]),
-        command="--command",
+        command=arguments["--command"],
         enabled=arguments["--enabled"],
+        expiry=arguments["--expiry"],
         hour=arguments["--hour"],
         interval=arguments["--interval"],
         logfile=arguments["--logfile"],
