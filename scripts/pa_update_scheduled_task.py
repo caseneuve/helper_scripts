@@ -25,9 +25,8 @@ import logging
 import sys
 
 from docopt import docopt
-from schema import And, Or, Schema, Use
 
-from pythonanywhere.scripts_commons import get_logger, validate_user_input
+from pythonanywhere.scripts_commons import Schemata, ScriptSchema, get_logger
 from pythonanywhere.snakesay import snakesay
 from pythonanywhere.task import Task
 
