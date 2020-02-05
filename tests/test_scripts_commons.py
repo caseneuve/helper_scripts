@@ -1,35 +1,110 @@
 from unittest.mock import call
 
 import pytest
-from schema import And, Schema, SchemaError
-
-# from pythonanywhere.scripts_commons import validate_user_input
-
-# example_schema = Schema(
-#     {
-#         "a": And(int, lambda a: a > 0, error="<a> should be bigger than 0"),
-#         "b": And(str, lambda b: b.startswith("foo"), error="<b> should start with 'foo'"),
-#     }
-# )
+from pythonanywhere.scripts_commons import ScriptSchema, SchemaError, tabulate_formats
+from pythonanywhere.snakesay import snakesay
 
 
-# class TestValidateUserInput:
-#     def test_returns_arguments(self):
-#         args = {"a": 1, "b": "foobar"}
+@pytest.mark.tasks
+class TestScriptSchema:
+    def test_validates_boolean(self):
+        schema = ScriptSchema({"--toggle": ScriptSchema.boolean})
 
-#         result = validate_user_input(args, example_schema)
+        for val in (True, False, None):
+            result = schema.validate_user_input({"--toggle": val})
+            assert result == {"toggle": val}
 
-#         assert result == args
+    def test_raises_because_boolean_not_satisfied(self, mocker):
+        mock_exit = mocker.patch("pythonanywhere.scripts_commons.sys.exit")
+        mock_snake = mocker.patch("pythonanywhere.scripts_commons.snakesay")
+        mock_warning = mocker.patch("pythonanywhere.scripts_commons.logger.warning")
+        schema = ScriptSchema({"--toggle": ScriptSchema.boolean})
 
-#     def test_raises_because_arguments_dont_match_schema(self, mocker):
-#         args = {"a": 0, "b": "foobaz"}
-#         mock_print = mocker.patch("builtins.print")
-#         mock_exit = mocker.patch("pythonanywhere.scripts_commons.sys.exit")
+        schema.validate_user_input({"--toggle": "not valid value"})
 
-#         validate_user_input(args, example_schema)
+        assert mock_exit.call_args == call(1)
+        assert mock_warning.call_count == 1
+        assert mock_snake.call_args == call(
+            "Key '--toggle' error:\nOr(None, <class 'bool'>) did not validate 'not valid value'\n"
+            "'not valid value' should be instance of 'bool'"
+        )
 
-#         assert mock_exit.call_args == call(1)
-#         assert (
-#             repr(mock_print.call_args[0])
-#             == "(SchemaError('<a> should be bigger than 0',),)"
-#         )
+    def test_validates_bour(self):
+        schema = ScriptSchema({"--hour": ScriptSchema.hour})
+
+        for val in (None, 0, 12, 23):
+            result = schema.validate_user_input({"--hour": val})
+            assert result == {"hour": val}
+
+    def test_raises_because_hour_not_satisfied(self, mocker):
+        mock_exit = mocker.patch("pythonanywhere.scripts_commons.sys.exit")
+        mock_snake = mocker.patch("pythonanywhere.scripts_commons.snakesay")
+        mock_warning = mocker.patch("pythonanywhere.scripts_commons.logger.warning")
+        schema = ScriptSchema({"--hour": ScriptSchema.hour})
+
+        schema.validate_user_input({"--hour": 30})
+
+        assert mock_exit.call_args == call(1)
+        assert mock_warning.call_count == 1
+        assert mock_snake.call_args == call("--hour has to be in 0..23")
+
+    def test_validates_minute(self):
+        schema = ScriptSchema({"--minute": ScriptSchema.minute})
+
+        for val in (None, 1, 30, 59):
+            result = schema.validate_user_input({"--minute": val})
+            assert result == {"minute": val}
+
+    def test_raises_because_minute_not_satisfied(self, mocker):
+        mock_exit = mocker.patch("pythonanywhere.scripts_commons.sys.exit")
+        mock_snake = mocker.patch("pythonanywhere.scripts_commons.snakesay")
+        mock_warning = mocker.patch("pythonanywhere.scripts_commons.logger.warning")
+        schema = ScriptSchema({"--minute": ScriptSchema.minute})
+
+        schema.validate_user_input({"--minute": 60})
+
+        assert mock_exit.call_args == call(1)
+        assert mock_warning.call_count == 1
+        assert mock_snake.call_args == call("--minute has to be in 0..59")
+
+    def test_validates_id(self):
+        schema = ScriptSchema({"<id>": ScriptSchema.id_required})
+
+        result = schema.validate_user_input({"<id>": 42})
+
+        assert result == {"task_id": 42}
+
+    def test_raises_because_id_not_satisfied(self, mocker):
+        mock_exit = mocker.patch("pythonanywhere.scripts_commons.sys.exit")
+        mock_snake = mocker.patch("pythonanywhere.scripts_commons.snakesay")
+        mock_warning = mocker.patch("pythonanywhere.scripts_commons.logger.warning")
+        schema = ScriptSchema({"<id>": ScriptSchema.id_required})
+
+        schema.validate_user_input({"<id>": None})
+
+        assert mock_exit.call_args == call(1)
+        assert mock_warning.call_count == 1
+        assert mock_snake.call_args == call("<id> has to be an integer")
+
+    def test_validates_tabulate_format(self):
+        schema = ScriptSchema({"--format": ScriptSchema.tabulate_format})
+
+        for val in tabulate_formats:
+            result = schema.validate_user_input({"--format": val})
+            assert result == {"format": val}
+
+    def test_raises_because_tabulate_format_not_satisfied(self, mocker):
+        mock_exit = mocker.patch("pythonanywhere.scripts_commons.sys.exit")
+        mock_snake = mocker.patch("pythonanywhere.scripts_commons.snakesay")
+        mock_warning = mocker.patch("pythonanywhere.scripts_commons.logger.warning")
+        schema = ScriptSchema({"--format": ScriptSchema.tabulate_format})
+
+        schema.validate_user_input({"--format": "non_existing_format"})
+
+        assert mock_exit.call_args == call(1)
+        assert mock_warning.call_count == 1
+        assert mock_snake.call_args == call(
+            "--format should match one of: plain, simple, github, grid, fancy_grid, pipe, orgtbl, "
+            "jira, presto, psql, rst, mediawiki, moinmoin, youtrack, html, latex, latex_raw, "
+            "latex_booktabs, textile"
+        )
