@@ -47,7 +47,8 @@ class ScriptSchema(Schema):
     def init(self, schema):
         super().__init__(schema=schema)
 
-    def convert(self, string):
+    @staticmethod
+    def convert(string):
         to_be_replaced = {
             "--": "",
             "<": "",

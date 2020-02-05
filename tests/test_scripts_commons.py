@@ -108,3 +108,16 @@ class TestScriptSchema:
             "jira, presto, psql, rst, mediawiki, moinmoin, youtrack, html, latex, latex_raw, "
             "latex_booktabs, textile"
         )
+
+
+@pytest.mark.tasks
+class TestScriptSchemaConvert:
+    def test_replaces_strings(self):
+        was = ("--option", "<arg>", "--printable-time", "--snakesay", "<id>")
+        should_be = ("option", "arg", "printable_time", "snake", "task_id")
+
+        for string, expected in zip(was, should_be):
+            assert ScriptSchema.convert(string) == expected
+
+    def test_returns_unchanged_string(self):
+        assert ScriptSchema.convert("will_not_be_changed") == "will_not_be_changed"
