@@ -18,13 +18,13 @@ from pythonanywhere.scripts_commons import validate_user_input
 from pythonanywhere.task import Task
 
 
-def main(task_id):
-    task = Task.from_id(task_id=task_id)
+def main(*, task_id):
+    task = Task.from_id(task_id)
     task.delete_schedule()
 
 
 if __name__ == "__main__":
-    schema = Schema({"<id>": And(Use(int), error="<id> must be an integer")})
-    arguments = validate_user_input(docopt(__doc__), schema)
+    schema = ScriptSchema({"<id>": Schemata.id_required})
+    argument = schema.validate_user_input(docopt(__doc__))
 
-    main(int(arguments["<id>"]))
+    main(**argument)

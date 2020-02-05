@@ -23,32 +23,29 @@ Note:
   Task <id> may be found using pa_get_scheduled_tasks_list.py script.
 """
 
-# import logging
 import sys
 
 from docopt import docopt
-from schema import And, Or, Schema, Use
 from tabulate import tabulate
 
-from pythonanywhere.scripts_commons import get_logger, validate_user_input
+from pythonanywhere.scripts_commons import Schemata, ScriptSchema, get_logger
 from pythonanywhere.snakesay import snakesay
 from pythonanywhere.task import Task
 
-# logging.basicConfig(format="%(message)s", stream=sys.stdout)
-# logger = logging.getLogger("pythonanywhere")
-# logger.setLevel(logging.INFO)
 logger = get_logger(set_info=True)
 
 
-def main(task_id, **kwargs):
+def main(**kwargs):
+    task_id = kwargs.pop("task_id")
+
     try:
         task = Task.from_id(task_id)
     except Exception as e:
         print(snakesay("Ooops. {}".format(e)))
         sys.exit(1)
 
-    snake = kwargs.pop("snake")
-    values = kwargs.pop("values")
+    print_snake = kwargs.pop("snake")
+    print_only_values = kwargs.pop("values")
 
     specs = (
         {spec: getattr(task, spec) for spec in kwargs if kwargs[spec]}
@@ -61,10 +58,10 @@ def main(task_id, **kwargs):
         specs.update({"logfile": task.logfile.replace("/user/{}/files".format(task.user), "")})
 
     intro = "Task {} specs: ".format(task_id)
-    if values:
+    if print_only_values:
         specs = "\n".join([str(val) for val in specs.values()])
         logger.info(specs)
-    elif snake:
+    elif print_snake:
         specs = ["<{}>: {}".format(spec, value) for spec, value in specs.items()]
         specs.sort()
         logger.info(snakesay(intro + ", ".join(specs)))
@@ -76,34 +73,21 @@ def main(task_id, **kwargs):
 
 
 if __name__ == "__main__":
-    Boolean = Or(None, bool)
-    schema = Schema(
+    schema = ScriptSchema(
         {
-            "<id>": And(Use(int), error="<id> should be an integer"),
-            "--command": Boolean,
-            "--enabled": Boolean,
-            "--expiry": Boolean,
-            "--hour": Boolean,
-            "--interval": Boolean,
-            "--logfile": Boolean,
-            "--minute": Boolean,
-            "--printable-time": Boolean,
-            "--values": Boolean,
-            "--snakesay": Boolean,
+            "<id>": Schemata.id_required,
+            "--command": Schemata.boolean,
+            "--enabled": Schemata.boolean,
+            "--expiry": Schemata.boolean,
+            "--hour": Schemata.boolean,
+            "--interval": Schemata.boolean,
+            "--logfile": Schemata.boolean,
+            "--minute": Schemata.boolean,
+            "--printable-time": Schemata.boolean,
+            "--values": Schemata.boolean,
+            "--snakesay": Schemata.boolean,
         }
     )
-    arguments = validate_user_input(docopt(__doc__), schema)
+    arguments = schema.validate_user_input(docopt(__doc__))
 
-    main(
-        int(arguments["<id>"]),
-        command=arguments["--command"],
-        enabled=arguments["--enabled"],
-        expiry=arguments["--expiry"],
-        hour=arguments["--hour"],
-        interval=arguments["--interval"],
-        logfile=arguments["--logfile"],
-        minute=arguments["--minute"],
-        values=arguments["--values"],
-        printable_time=arguments["--printable-time"],
-        snake=arguments["--snakesay"],
-    )
+    main(**arguments)

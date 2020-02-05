@@ -11,52 +11,22 @@ Options:
                                  (defaults to 'simple')
 """
 
-import getpass
-
 from docopt import docopt
-from schema import And, Or, Schema, SchemaError, Use
 from tabulate import tabulate
 
-from pythonanywhere.scripts_commons import validate_user_input
+from pythonanywhere.scripts_commons import Schemata, ScriptSchema
 from pythonanywhere.task import TaskList
 
-headers = "id", "interval", "at", "enabled", "command"
-formats = [
-    "plain",
-    "simple",
-    "github",
-    "grid",
-    "fancy_grid",
-    "pipe",
-    "orgtbl",
-    "jira",
-    "presto",
-    "psql",
-    "rst",
-    "mediawiki",
-    "moinmoin",
-    "youtrack",
-    "html",
-    "latex",
-    "latex_raw",
-    "latex_booktabs",
-    "textile",
-]
 
-
-def main(fmt):
+def main(tablefmt):
+    headers = "id", "interval", "at", "enabled", "command"
     attrs = "task_id", "interval", "printable_time", "enabled", "command"
     table = [[getattr(task, attr) for attr in attrs] for task in TaskList().tasks]
-    print(tabulate(table, headers, tablefmt=fmt))
+    print(tabulate(table, headers, tablefmt=tablefmt))
 
 
 if __name__ == "__main__":
-    Format = Or(
-        None,
-        And(str, lambda f: f in formats),
-        error="--format should match one of: {}".format(", ".join(formats)),
-    )
-    schema = Schema({"--format": Format})
-    arguments = validate_user_input(docopt(__doc__), schema)
+    schema = ScriptSchema({"--format": Schemata.tabulate_format})
+    argument = schema.validate_user_input(docopt(__doc__))
 
-    main(arguments.get("--format", "simple"))
+    main(arguments.get("format", "simple"))

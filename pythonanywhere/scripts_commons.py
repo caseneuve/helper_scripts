@@ -3,6 +3,28 @@ import sys
 
 from schema import SchemaError, Schema, Or, And, Use
 
+tabulate_formats = [
+    "plain",
+    "simple",
+    "github",
+    "grid",
+    "fancy_grid",
+    "pipe",
+    "orgtbl",
+    "jira",
+    "presto",
+    "psql",
+    "rst",
+    "mediawiki",
+    "moinmoin",
+    "youtrack",
+    "html",
+    "latex",
+    "latex_raw",
+    "latex_booktabs",
+    "textile",
+]
+
 
 class Schemata:
     boolean = Or(None, bool)
@@ -11,6 +33,11 @@ class Schemata:
     minute_required = And(Use(int), lambda m: 0 <= m <= 59, error="--minute has to be in 0..59")
     id_required = And(Use(int), error="<id> has to be an integer")
     string = Or(None, str)
+    tabulate_format = Or(
+        None,
+        And(str, lambda f: f in tabulate_formats),
+        error="--format should match one of: {}".format(", ".join(tabulate_formats)),
+    )
 
 
 class ScriptSchema(Schema):
@@ -18,7 +45,14 @@ class ScriptSchema(Schema):
         super().__init__(schema=schema)
 
     def convert(self, string):
-        to_be_replaced = {"id": "task_id", "snakesay": "snake", "--": "", "<": "", ">": ""}
+        to_be_replaced = {
+            "--": "",
+            "<": "",
+            ">": "",
+            "printable-": "printable_",
+            "snakesay": "snake",
+            "id": "task_id",
+        }
         for k, v in to_be_replaced.items():
             string = string.replace(k, v)
         return string

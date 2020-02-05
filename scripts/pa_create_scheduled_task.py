@@ -23,9 +23,8 @@ Example:
 """
 
 from docopt import docopt
-from schema import And, Or, Schema, SchemaError, Use
 
-from pythonanywhere.scripts_commons import Schemata, validate_user_input
+from pythonanywhere.scripts_commons import Schemata, ScriptSchema
 from pythonanywhere.task import Task
 
 
@@ -36,10 +35,7 @@ def main(command, hour, minute, disabled):
 
 
 if __name__ == "__main__":
-    # Hour = Or(None, And(Use(int), lambda h: 0 <= h <= 23), error="--hour has to be in 0..23")
-    # Minute = And(Use(int), lambda m: 0 <= m <= 59, error="--minute has to be in 0..59")
-    # Boolean = Or(None, bool)
-    schema = Schema(
+    schema = ScriptSchema(
         {
             "--command": str,
             "--hour": Schemata.hour,
@@ -47,11 +43,6 @@ if __name__ == "__main__":
             "--disabled": Schemata.boolean,
         }
     )
-    arguments = validate_user_input(docopt(__doc__), schema)
+    arguments = schema.validate_user_input(docopt(__doc__))
 
-    main(
-        arguments["--command"],
-        arguments["--hour"],
-        arguments["--minute"],
-        arguments["--disabled"],
-    )
+    main(**arguments)

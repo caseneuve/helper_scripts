@@ -12,9 +12,7 @@ example_specs = [
         "command": "echo foo",
         "enabled": True,
         "expiry": None,
-        "extend_url": "/user/{username}/schedule/task/42/extend".format(
-            username=username
-        ),
+        "extend_url": "/user/{username}/schedule/task/42/extend".format(username=username),
         "hour": 16,
         "id": 42,
         "interval": "daily",
@@ -29,9 +27,7 @@ example_specs = [
         "command": "echo bar",
         "enabled": False,
         "expiry": None,
-        "extend_url": "/user/{username}/schedule/task/43/extend".format(
-            username=username
-        ),
+        "extend_url": "/user/{username}/schedule/task/43/extend".format(username=username),
         "hour": 17,
         "id": 43,
         "interval": "daily",
@@ -48,12 +44,10 @@ example_specs = [
 @pytest.mark.dev
 def test_calls_all_stuff_in_right_order(mocker):
     mock_TaskList = mocker.patch("scripts.pa_get_scheduled_tasks_list.TaskList")
-    mock_TaskList.return_value.tasks = [
-        Task.from_specs(specs) for specs in example_specs
-    ]
+    mock_TaskList.return_value.tasks = [Task.from_specs(specs) for specs in example_specs]
     mock_tabulate = mocker.patch("scripts.pa_get_scheduled_tasks_list.tabulate")
 
-    main(fmt="orgtbl")
+    main(tablefmt="orgtbl")
 
     headers = "id", "interval", "at", "enabled", "command"
     attrs = "task_id", "interval", "printable_time", "enabled", "command"

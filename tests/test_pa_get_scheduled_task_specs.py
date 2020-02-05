@@ -10,6 +10,7 @@ USER = getpass.getuser()
 @pytest.fixture()
 def args():
     yield {
+        "task_id": 42,
         "command": None,
         "enabled": None,
         "hour": None,
@@ -47,7 +48,7 @@ class TestGetScheduledTaskSpecs:
     def test_prints_all_specs_using_tabulate(self, task_from_id, args, mocker):
         mock_tabulate = mocker.patch("scripts.pa_get_scheduled_task_specs.tabulate")
 
-        main(42, **args)
+        main(**args)
 
         assert task_from_id.call_args == call(42)
         assert mock_tabulate.call_args == call(
@@ -67,7 +68,7 @@ class TestGetScheduledTaskSpecs:
         args.update({"snake": True})
         mock_snakesay = mocker.patch("scripts.pa_get_scheduled_task_specs.snakesay")
 
-        main(42, **args)
+        main(**args)
 
         assert task_from_id.call_args == call(42)
         expected = (
@@ -80,7 +81,7 @@ class TestGetScheduledTaskSpecs:
         args.update({"command": True})
         mock_tabulate = mocker.patch("scripts.pa_get_scheduled_task_specs.tabulate")
 
-        main(42, **args)
+        main(**args)
 
         assert task_from_id.call_args == call(42)
         assert mock_tabulate.call_args == call([["command", "echo foo"]], tablefmt="simple")

@@ -50,8 +50,8 @@ def main(**kwargs):
 
     params = {key: val for key, val in kwargs.items() if val}
     if enable_opt:
-        enable_opt = {"toggle": not task.enabled, "disable": False, "enable": True}[enable_opt]
-        params.update({"enabled": enable_opt})
+        enabled = {"toggle": not task.enabled, "disable": False, "enable": True}[enable_opt]
+        params.update({"enabled": enabled})
 
     try:
         task.update_schedule(params, porcelain)
