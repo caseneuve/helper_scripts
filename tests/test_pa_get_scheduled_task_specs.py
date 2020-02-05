@@ -4,6 +4,8 @@ from unittest.mock import call
 import pytest
 from scripts.pa_get_scheduled_task_specs import main
 
+USER = getpass.getuser()
+
 
 @pytest.fixture()
 def args():
@@ -27,11 +29,11 @@ def task_from_id(mocker):
         "enabled": True,
         "hour": 10,
         "interval": "daily",
-        "logfile": "/user/{}/files/foo".format(getpass.getuser()),
+        "logfile": "/user/{}/files/foo".format(USER),
         "minute": 23,
         "printable_time": "10:23",
         "task_id": 42,
-        "username": getpass.getuser(),
+        "username": USER,
     }
     task = mocker.patch("scripts.pa_get_scheduled_task_specs.Task.from_id")
     for spec, value in specs.items():
@@ -53,7 +55,7 @@ class TestGetScheduledTaskSpecs:
                 ["enabled", True],
                 ["hour", 10],
                 ["interval", "daily"],
-                ["logfile", "/user/piotr/files/foo"],
+                ["logfile", "/user/{}/files/foo".format(USER)],
                 ["minute", 23],
                 ["printable_time", "10:23"],
             ],
@@ -61,7 +63,7 @@ class TestGetScheduledTaskSpecs:
         )
 
     def test_prints_all_specs_using_snakesay(self, task_from_id, args, mocker):
-        args.update({"snake": True})
+
         mock_snakesay = mocker.patch("scripts.pa_get_scheduled_task_specs.snakesay")
 
         main(42, **args)
@@ -69,7 +71,7 @@ class TestGetScheduledTaskSpecs:
         assert task_from_id.call_args == call(42)
         assert mock_snakesay.call_args == call(
             "Task 42 specs: <command>: echo foo, <enabled>: True, <hour>: 10, <interval>: daily, "
-            "<logfile>: /user/piotr/files/foo, <minute>: 23, <printable_time>: 10:23"
+            "<logfile>: /user/{}/files/foo, <minute>: 23, <printable_time>: 10:23".format(USER)
         )
 
     def test_prints_one_spec(self, task_from_id, args, mocker):
