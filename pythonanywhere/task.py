@@ -86,26 +86,28 @@ class Task:
         new_specs = self.schedule.update(self.task_id, specs)
 
         # todo: sprawdzić architekturę logowania i skończyć logikę tutaj
-        if logging != "quiet":
-            diff = {
-                key: (getattr(self, key), new_specs[key])
-                for key in old_specs
-                if getattr(self, key) != new_specs[key]
-            }
+        diff = {
+            key: (getattr(self, key), new_specs[key])
+            for key in specs
+            if getattr(self, key) != new_specs[key]
+        }
 
-            def make_spec_str(key, old_spec, new_spec):
-                return "<{}> from '{}' to '{}'".format(key, old_spec, new_spec)
+        def make_spec_str(key, old_spec, new_spec):
+            return "<{}> from '{}' to '{}'".format(key, old_spec, new_spec)
 
-            updated = [make_spec_str(key, val[0], val[1]) for key, val in diff.items()]
+        updated = [make_spec_str(key, val[0], val[1]) for key, val in diff.items()]
+        if updated:
             intro = "Successfully updated:"
             if logging == "porcelain":
-                logger.info(intro)
+                logger.warning(intro)
                 for line in updated:
-                    logger.info(line)
+                    logger.warning(line)
             else:
-                logger.info(
-                    snakesay("{} {} in task {}".format(intro, ", ".join(updated), self.task_id,))
+                logger.warning(
+                    snakesay("{} {} in task {}".format(intro, ", ".join(updated), self.task_id))
                 )
+        else:
+            logger.warning("Nothing to update!")
 
         self.update_specs(new_specs)
 

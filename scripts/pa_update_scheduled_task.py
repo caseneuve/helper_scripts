@@ -20,14 +20,15 @@ Options:
 Example: #todo:
 
 """
+from docopt import docopt
 
+from pythonanywhere.scripts_commons import validate_user_input
+from pythonanywhere.snakesay import snakesay
+from pythonanywhere.task import Task
 from schema import And, Or, Schema, Use
 
-from pythonanywhere.task import Task
-from pythonanywhere.scripts_commons import validate_user_input
 
-
-def main(**kwargs):
+def main(task_id, **kwargs):
     def parse_opts(opts, fallback):
         candidates = [key for key in opts if kwargs.pop(key)]
         return candidates[0] if candidates else fallback
@@ -35,10 +36,18 @@ def main(**kwargs):
     logging = parse_opts(("quiet", "porcelain"), "full")
     visibility = parse_opts(("toggle", "disable", "enable"), None)
 
+    task = Task.from_id(task_id)
+
     params = {key: val for key, val in kwargs.items() if val}
 
+    if visibility:
+        params.update(
+            {"enabled": {"toggle": not task.enabled, "disable": False, "enable": True}[visibility]}
+        )
+    # print(params)
+
     try:
-        Task.from_id(task_id).update_schedule(params, logging=logging)
+        task.update_schedule(params, logging=logging)
     except Exception as e:
         if logging != "porcelain":
             print(snakesay(str(e)))
@@ -53,7 +62,7 @@ if __name__ == "__main__":
     schema = Schema(
         {
             "<id>": And(Use(int), error="<id> has to be an integer"),
-            "--command": str,
+            "--command": Or(None, str),
             "--hour": Hour,
             "--minute": Minute,
             "--disable": Boolean,
@@ -66,7 +75,7 @@ if __name__ == "__main__":
     arguments = validate_user_input(docopt(__doc__), schema)
 
     main(
-        task_id=arguments["<id>"],
+        arguments["<id>"],
         command=arguments["--command"],
         hour=arguments["--hour"],
         minute=arguments["--minute"],

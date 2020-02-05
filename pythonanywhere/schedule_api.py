@@ -6,9 +6,7 @@ from pythonanywhere.snakesay import snakesay
 
 class Schedule:
     def __init__(self):
-        self.base_url = get_api_endpoint().format(
-            username=getpass.getuser(), flavor="schedule"
-        )
+        self.base_url = get_api_endpoint().format(username=getpass.getuser(), flavor="schedule")
 
     def create(self, params):
         result = call_api(self.base_url, "POST", json=params)
@@ -36,8 +34,7 @@ class Schedule:
 
     def delete(self, task_id):
         result = call_api(
-            "{base_url}{task_id}/".format(base_url=self.base_url, task_id=task_id),
-            "DELETE",
+            "{base_url}{task_id}/".format(base_url=self.base_url, task_id=task_id), "DELETE"
         )
 
         if result.status_code == 204:
@@ -46,15 +43,12 @@ class Schedule:
         if not result.ok:
             raise Exception(
                 "DELETE via API on task {task_id} failed, got {result}: "
-                "{result_text}".format(
-                    task_id=task_id, result=result, result_text=result.text
-                )
+                "{result_text}".format(task_id=task_id, result=result, result_text=result.text)
             )
 
     def get_specs(self, task_id):
         result = call_api(
-            "{base_url}{task_id}/".format(base_url=self.base_url, task_id=task_id),
-            "GET",
+            "{base_url}{task_id}/".format(base_url=self.base_url, task_id=task_id), "GET"
         )
         if result.status_code == 200:
             return result.json()
@@ -71,7 +65,9 @@ class Schedule:
 
     def update(self, task_id, params):
         result = call_api(
-            "{base_url}{task_id}/".format(base_url=self.base_url), "PATCH", json=params
+            "{base_url}{task_id}/".format(task_id=task_id, base_url=self.base_url),
+            "PATCH",
+            json=params,
         )
         if result.status_code == 200:
             return result.json()

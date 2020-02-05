@@ -46,5 +46,6 @@ setup(
         "scripts/pa_install_webapp_ssl.py",
         "scripts/pa_reload_webapp.py",
         "scripts/pa_start_django_webapp_with_virtualenv.py",
+        "scripts/pa_update_scheduled_task.py",
     ],
 )
