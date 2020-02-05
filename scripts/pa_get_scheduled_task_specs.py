@@ -4,15 +4,17 @@ Available specs are: command, enabled, interval, hour, minute.
 If no option specified, script will output all mentioned specs.
 
 Usage:
-  pa_get_scheduled_task_specs.py <id> [--command] [--enabled] [--interval] [--hour] [--minute] [--printable-time] [--snakesay]
+  pa_get_scheduled_task_specs.py <id> [--command] [--enabled] [--interval] [--hour] [--minute] [--printable-time] [--logfile] [--snakesay]
 
 Options:
   -h --help                      Prints this message
   -c --command                   Prints task's command
-  -e --enabled                   Prints True if task is enabled 
+  -e --enabled                   Prints True if task is enabled
   -i --interval                  Prints task's frequency (daily or hourly)
-  -o --hour                      Prints task's scheduled hour (if daily)
+  -l --logfile                   Prints task's current log file name
   -m --minute                    Prints task's scheduled minute
+  -o --hour                      Prints task's scheduled hour (if daily)
+  -p --printable-time            Prints task's scheduled time
   -s --snakesay                  Turns on snakesay... because why not
 
 Note:
@@ -20,14 +22,15 @@ Note:
 """
 
 import logging
+import sys
 
 from docopt import docopt
-from schema import And, Schema, Use
 from tabulate import tabulate
 
 from pythonanywhere.scripts_commons import validate_user_input
 from pythonanywhere.snakesay import snakesay
 from pythonanywhere.task import Task
+from schema import And, Or, Schema, Use
 
 logger = logging.getLogger(name=__name__)
 logger.setLevel(logging.INFO)
@@ -37,7 +40,8 @@ def main(task_id, **kwargs):
     try:
         task = Task.from_id(task_id)
     except Exception as e:
-        print(snakesay("Ooops. {e}".format(e=e)))
+        print(snakesay("Ooops. {}".format(e)))
+        sys.exit(1)
 
     snake = kwargs.pop("snake")
 
@@ -74,6 +78,7 @@ if __name__ == "__main__":
             "--interval": Boolean,
             "--logfile": Boolean,
             "--minute": Boolean,
+            "--printable-time": Boolean,
             "--snakesay": Boolean,
         }
     )
@@ -87,5 +92,6 @@ if __name__ == "__main__":
         interval=arguments["--interval"],
         logfile=arguments["--logfile"],
         minute=arguments["--minute"],
+        printable_time=arguments["--printable-time"],
         snake=arguments["--snakesay"],
     )
