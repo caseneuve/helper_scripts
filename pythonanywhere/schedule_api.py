@@ -5,8 +5,7 @@ from pythonanywhere.snakesay import snakesay
 
 
 class Schedule:
-    def __init__(self):
-        self.base_url = get_api_endpoint().format(username=getpass.getuser(), flavor="schedule")
+    base_url = get_api_endpoint().format(username=getpass.getuser(), flavor="schedule")
 
     def create(self, params):
         result = call_api(self.base_url, "POST", json=params)
