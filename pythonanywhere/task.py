@@ -28,7 +28,7 @@ class Task:
         status = (
             "{} at {}".format(enabled, self.printable_time)
             if self.printable_time
-            else "ready be created"
+            else "ready to be created"
         )
         num = " <{}>:".format(self.task_id) if self.task_id else ""
 
