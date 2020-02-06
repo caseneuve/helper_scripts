@@ -1,11 +1,8 @@
 import getpass
-import json
-from unittest.mock import Mock, call, patch
+from unittest.mock import call
 
 import pytest
-import responses
 
-from pythonanywhere.api import get_api_endpoint
 from pythonanywhere.task import Task, TaskList
 
 username = getpass.getuser()

@@ -4,7 +4,6 @@ from unittest.mock import call
 
 import pytest
 
-from pythonanywhere.api import get_api_endpoint
 from pythonanywhere.scripts_commons import (
     SchemaError,
     ScriptSchema,
@@ -12,7 +11,6 @@ from pythonanywhere.scripts_commons import (
     get_task_from_id,
     tabulate_formats,
 )
-from pythonanywhere.snakesay import snakesay
 
 
 @pytest.mark.tasks

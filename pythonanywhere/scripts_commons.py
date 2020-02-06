@@ -44,9 +44,6 @@ class ScriptSchema(Schema):
         error="--format should match one of: {}".format(", ".join(tabulate_formats)),
     )
 
-    def init(self, schema):
-        super().__init__(schema=schema)
-
     @staticmethod
     def convert(string):
         to_be_replaced = {
