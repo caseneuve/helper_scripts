@@ -23,6 +23,19 @@ class Task:
         self.user = None
         self.schedule = Schedule()
 
+    def __repr__(self):
+        enabled = "enabled" if self.enabled else "disabled"
+        status = (
+            "{} at {}".format(enabled, self.printable_time)
+            if self.printable_time
+            else "ready be created"
+        )
+        num = " id <{}>".format(self.task_id) if self.task_id else ""
+
+        return "{interval} task{num} '{command}' {status}".format(
+            interval=self.interval, num=num, command=self.command, status=status,
+        )
+
     @classmethod
     def from_id(cls, task_id):
         task = cls()
