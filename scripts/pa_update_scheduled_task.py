@@ -28,10 +28,10 @@ from docopt import docopt
 from pythonanywhere.scripts_commons import ScriptSchema, get_logger, get_task_from_id
 from pythonanywhere.snakesay import snakesay
 
-logger = get_logger()
-
 
 def main(**kwargs):
+    logger = get_logger()
+
     task_id = kwargs.pop("task_id")
 
     def parse_opts(*opts):

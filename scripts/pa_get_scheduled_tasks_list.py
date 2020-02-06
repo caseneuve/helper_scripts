@@ -18,10 +18,9 @@ from tabulate import tabulate
 from pythonanywhere.scripts_commons import ScriptSchema, get_logger
 from pythonanywhere.task import TaskList
 
-logger = get_logger(set_info=True)
-
 
 def main(tablefmt):
+    logger = get_logger(set_info=True)
     headers = "id", "interval", "at", "enabled", "command"
     attrs = "task_id", "interval", "printable_time", "enabled", "command"
     table = [[getattr(task, attr) for attr in attrs] for task in TaskList().tasks]

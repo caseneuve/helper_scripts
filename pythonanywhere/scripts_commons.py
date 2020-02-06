@@ -75,6 +75,8 @@ def get_logger(set_info=False):
     logger = logging.getLogger("pythonanywhere")
     if set_info:
         logger.setLevel(logging.INFO)
+    else:
+        logger.setLevel(logging.WARNING)
     return logger
 
 

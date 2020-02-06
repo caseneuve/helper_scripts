@@ -29,10 +29,10 @@ from tabulate import tabulate
 from pythonanywhere.scripts_commons import ScriptSchema, get_logger, get_task_from_id
 from pythonanywhere.snakesay import snakesay
 
-logger = get_logger(set_info=True)
-
 
 def main(**kwargs):
+    logger = get_logger(set_info=True)
+
     task_id = kwargs.pop("task_id")
     task = get_task_from_id(task_id)
 

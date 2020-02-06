@@ -1,4 +1,5 @@
 import getpass
+import logging
 from unittest.mock import call
 
 import pytest
@@ -132,17 +133,19 @@ class TestScriptSchemaConvert:
 
 
 @pytest.mark.tasks
-@pytest.mark.suspicious
 class TestGetLogger:
-    """ CHECK: level powinien być różny w zależności od opcji set_info"""
+    def test_returns_pa_logger(self, caplog):
+        # get_logger should change logger to WARNING, i.e. level 30
+        caplog.set_level(logging.INFO, logger="pythonanywhere")
 
-    def test_returns_pa_logger(self):
         logger = get_logger()
-
         assert logger.name == "pythonanywhere"
-        assert logger.level == 20
+        assert logger.level == 30
 
-    def test_returns_pa_logger_info(self):
+    def test_returns_pa_logger_info(self, caplog):
+        # get_logger should change logger to INFO, i.e. level 20
+        caplog.set_level(logging.WARNING, logger="pythonanywhere")
+
         logger = get_logger(set_info=True)
 
         assert logger.name == "pythonanywhere"
