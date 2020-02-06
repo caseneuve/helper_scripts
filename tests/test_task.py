@@ -5,82 +5,72 @@ import pytest
 
 from pythonanywhere.task import Task, TaskList
 
-username = getpass.getuser()
-example_specs = {
-    "can_enable": False,
-    "command": "echo foo",
-    "enabled": True,
-    "expiry": None,
-    "extend_url": "/user/{username}/schedule/task/42/extend".format(username=username),
-    "hour": 16,
-    "id": 42,
-    "interval": "daily",
-    "logfile": "/user/{username}/files/var/log/tasklog-126708-daily-at-1600-echo_foo.log",
-    "minute": 0,
-    "printable_time": "16:00",
-    "url": "/api/v0/user/{username}/schedule/42".format(username=username),
-    "user": username,
-}
+
+@pytest.fixture
+def task_specs():
+    username = getpass.getuser()
+    return {
+        "can_enable": False,
+        "command": "echo foo",
+        "enabled": True,
+        "expiry": None,
+        "extend_url": "/user/{username}/schedule/task/42/extend".format(username=username),
+        "hour": 16,
+        "task_id": 42,
+        "interval": "daily",
+        "logfile": "/user/{username}/files/var/log/tasklog-126708-daily-at-1600-echo_foo.log",
+        "minute": 0,
+        "printable_time": "16:00",
+        "url": "/api/v0/user/{username}/schedule/42".format(username=username),
+        "user": username,
+    }
 
 
 @pytest.mark.tasks
 class TestTaskToBeCreated:
-    def test_instances_new_daily_enabled(self):
+    def test_instantiates_new_daily_enabled(self):
         task = Task.to_be_created(command="myscript.py", hour=8, minute=10, disabled=False)
         assert task.command == "myscript.py"
         assert task.hour == 8
         assert task.minute == 10
         assert task.interval == "daily"
         assert task.enabled is True
+        assert task.__repr__() == "daily task 'myscript.py' ready to be created"
 
-    def test_instances_new_hourly_disabled(self, mocker):
+    def test_instantiates_new_hourly_disabled(self, mocker):
         task = Task.to_be_created(command="myscript.py", hour=None, minute=10, disabled=True)
         assert task.command == "myscript.py"
         assert task.hour == None
         assert task.minute == 10
         assert task.interval == "hourly"
         assert task.enabled is False
+        assert task.__repr__() == "hourly task 'myscript.py' ready to be created"
 
 
 @pytest.mark.tasks
 class TestTaskFromId:
-    def test_updates_specs(self, mocker):
+    def test_updates_specs(self, task_specs, mocker):
         mock_get_specs = mocker.patch("pythonanywhere.schedule_api.Schedule.get_specs")
-        specs = dict(**example_specs)
-        specs["task_id"] = specs.pop("id")
-        mock_get_specs.return_value = example_specs
+        mock_get_specs.return_value = task_specs
+
         task = Task.from_id(task_id=42)
-        assert task.can_enable == False
-        assert task.command == "echo foo"
-        assert task.enabled == True
-        assert task.expiry == None
-        assert task.extend_url == "/user/{username}/schedule/task/42/extend".format(
-            username=username
-        )
-        assert task.hour == 16
-        assert task.task_id == 42
-        assert task.interval == "daily"
-        assert (
-            task.logfile
-            == "/user/{username}/files/var/log/tasklog-126708-daily-at-1600-echo_foo.log"
-        )
-        assert task.minute == 0
-        assert task.printable_time == "16:00"
-        assert task.url == "/api/v0/user/{username}/schedule/42".format(username=username)
-        assert task.user == username
+
+        for spec, expected_value in task_specs.items():
+            assert getattr(task, spec) == expected_value
+        assert task.__repr__() == "daily task <42>: 'echo foo' enabled at 16:00"
 
 
 @pytest.mark.tasks
 class TestTaskCreateSchedule:
-    def test_creates_daily_task(self, mocker):
+    def test_creates_daily_task(self, mocker, task_specs):
         mock_create = mocker.patch("pythonanywhere.schedule_api.Schedule.create")
-        mock_create.return_value = example_specs
+        mock_create.return_value = task_specs
         mock_update_specs = mocker.patch("pythonanywhere.task.Task.update_specs")
         task = Task.to_be_created(command="echo foo", hour=16, minute=0, disabled=False)
 
         task.create_schedule()
 
-        assert mock_update_specs.call_args == call(example_specs)
+        assert mock_update_specs.call_args == call(task_specs)
         assert mock_create.call_count == 1
         assert mock_create.call_args == call(
             {"command": "echo foo", "hour": 16, "minute": 0, "enabled": True, "interval": "daily"}
@@ -89,10 +79,10 @@ class TestTaskCreateSchedule:
 
 @pytest.mark.tasks
 class TestTaskDeleteSchedule:
-    def test_calls_schedule_delete(self, mocker):
+    def test_calls_schedule_delete(self, task_specs, mocker):
         mock_delete = mocker.patch("pythonanywhere.schedule_api.Schedule.delete")
         mock_get_specs = mocker.patch("pythonanywhere.schedule_api.Schedule.get_specs")
-        mock_get_specs.return_value = example_specs
+        mock_get_specs.return_value = task_specs
 
         Task.from_id(task_id=42).delete_schedule()
 
@@ -135,12 +125,12 @@ class TestTaskUpdateSchedule:
 
 @pytest.mark.tasks
 class TestTaskList:
-    def test_pass(self, mocker):
+    def test_returns_task_list(self, task_specs, mocker):
         mock_get_list = mocker.patch("pythonanywhere.schedule_api.Schedule.get_list")
-        mock_get_list.return_value = [example_specs]
+        mock_get_list.return_value = [task_specs]
         mock_from_specs = mocker.patch("pythonanywhere.task.Task.from_specs")
 
         task_list = TaskList().tasks
 
-        assert mock_from_specs.call_args == call(example_specs)
+        assert mock_from_specs.call_args == call(task_specs)
         assert mock_get_list.call_count == 1
