@@ -30,10 +30,10 @@ class Task:
             if self.printable_time
             else "ready be created"
         )
-        num = " id <{}>".format(self.task_id) if self.task_id else ""
+        num = " <{}>:".format(self.task_id) if self.task_id else ""
 
         return "{interval} task{num} '{command}' {status}".format(
-            interval=self.interval, num=num, command=self.command, status=status,
+            interval=self.interval, num=num, command=self.command, status=status
         )
 
     @classmethod
