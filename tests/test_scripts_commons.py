@@ -23,7 +23,7 @@ class TestScriptSchema:
             result = schema.validate_user_input({"--toggle": val})
             assert result == {"toggle": val}
 
-    def test_raises_because_boolean_not_satisfied(self, mocker):
+    def test_exits_because_boolean_not_satisfied(self, mocker):
         mock_exit = mocker.patch("pythonanywhere.scripts_commons.sys.exit")
         mock_snake = mocker.patch("pythonanywhere.scripts_commons.snakesay")
         mock_warning = mocker.patch("pythonanywhere.scripts_commons.logger.warning")
@@ -45,7 +45,7 @@ class TestScriptSchema:
             result = schema.validate_user_input({"--hour": val})
             assert result == {"hour": val}
 
-    def test_raises_because_hour_not_satisfied(self, mocker):
+    def test_exits_because_hour_not_satisfied(self, mocker):
         mock_exit = mocker.patch("pythonanywhere.scripts_commons.sys.exit")
         mock_snake = mocker.patch("pythonanywhere.scripts_commons.snakesay")
         mock_warning = mocker.patch("pythonanywhere.scripts_commons.logger.warning")
@@ -64,7 +64,7 @@ class TestScriptSchema:
             result = schema.validate_user_input({"--minute": val})
             assert result == {"minute": val}
 
-    def test_raises_because_minute_not_satisfied(self, mocker):
+    def test_exits_because_minute_not_satisfied(self, mocker):
         mock_exit = mocker.patch("pythonanywhere.scripts_commons.sys.exit")
         mock_snake = mocker.patch("pythonanywhere.scripts_commons.snakesay")
         mock_warning = mocker.patch("pythonanywhere.scripts_commons.logger.warning")
@@ -83,7 +83,7 @@ class TestScriptSchema:
 
         assert result == {"task_id": 42}
 
-    def test_raises_because_id_not_satisfied(self, mocker):
+    def test_exits_because_id_not_satisfied(self, mocker):
         mock_exit = mocker.patch("pythonanywhere.scripts_commons.sys.exit")
         mock_snake = mocker.patch("pythonanywhere.scripts_commons.snakesay")
         mock_warning = mocker.patch("pythonanywhere.scripts_commons.logger.warning")
@@ -102,7 +102,7 @@ class TestScriptSchema:
             result = schema.validate_user_input({"--format": val})
             assert result == {"format": val}
 
-    def test_raises_because_tabulate_format_not_satisfied(self, mocker):
+    def test_exits_because_tabulate_format_not_satisfied(self, mocker):
         mock_exit = mocker.patch("pythonanywhere.scripts_commons.sys.exit")
         mock_snake = mocker.patch("pythonanywhere.scripts_commons.snakesay")
         mock_warning = mocker.patch("pythonanywhere.scripts_commons.logger.warning")
