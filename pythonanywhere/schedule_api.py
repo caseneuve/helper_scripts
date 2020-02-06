@@ -43,13 +43,12 @@ class Schedule:
         else:
             raise Exception(
                 "Could not get task with id {task_id}. Got result {result}: {content}".format(
-                    task_id=task_id, result=result, content=result.content.decode("utf-8")
+                    task_id=task_id, result=result, content=result.text
                 )
             )
 
     def get_list(self):
-        result = call_api("{base_url}".format(base_url=self.base_url), "GET")
-        return result.json()
+        return call_api(self.base_url, "GET").json()
 
     def update(self, task_id, params):
         result = call_api(
@@ -62,6 +61,6 @@ class Schedule:
         else:
             raise Exception(
                 "Could not update task {task_id}. Got {result}: {content}".format(
-                    task_id=task_id, result=result, content=result.content.decode("utf-8")
+                    task_id=task_id, result=result, content=result.text
                 )
             )
