@@ -4,6 +4,7 @@ from unittest.mock import call
 
 import pytest
 
+from pythonanywhere.api import get_api_endpoint
 from pythonanywhere.scripts_commons import (
     SchemaError,
     ScriptSchema,
@@ -181,14 +182,11 @@ class TestGetTaskFromId:
         mock_exit = mocker.patch("pythonanywhere.scripts_commons.sys.exit")
         mock_snakesay = mocker.patch("pythonanywhere.scripts_commons.snakesay")
         mock_warning = mocker.patch("pythonanywhere.scripts_commons.logger.warning")
+        mock_task_from_id = mocker.patch("pythonanywhere.task.Task.from_id")
+        mock_task_from_id.side_effect = Exception("exception")
 
-        get_task_from_id(1)
+        task = get_task_from_id(1)
 
-        assert mock_exit.call_args == call(1)
+        assert mock_snakesay.call_args == call("exception")
         assert mock_warning.call_count == 1
-        assert mock_snakesay.call_args == call(
-            "Oops, you don't seem to have an API token.  Please go to the 'Account' page on "
-            "PythonAnywhere, then to the 'API Token' tab.  Click the 'Create a new API token' "
-            "button to create the token, then start a new console and try running this script "
-            "again."
-        )
+        assert mock_exit.call_args == call(1)
