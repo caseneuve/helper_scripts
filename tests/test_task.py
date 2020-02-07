@@ -43,7 +43,7 @@ class TestTaskToBeCreated:
         assert task.minute == 10
         assert task.interval == "daily"
         assert task.enabled is True
-        assert task.__repr__() == "daily task 'myscript.py' ready to be created"
+        assert task.__repr__() == "Daily task 'myscript.py' ready to be created"
 
     def test_instantiates_new_hourly_disabled(self, mocker):
         task = Task.to_be_created(command="myscript.py", hour=None, minute=10, disabled=True)
@@ -52,7 +52,7 @@ class TestTaskToBeCreated:
         assert task.minute == 10
         assert task.interval == "hourly"
         assert task.enabled is False
-        assert task.__repr__() == "hourly task 'myscript.py' ready to be created"
+        assert task.__repr__() == "Hourly task 'myscript.py' ready to be created"
 
 
 @pytest.mark.tasks
@@ -65,7 +65,7 @@ class TestTaskFromId:
 
         for spec, expected_value in task_specs.items():
             assert getattr(task, spec) == expected_value
-        assert task.__repr__() == "daily task <42>: 'echo foo' enabled at 16:00"
+        assert task.__repr__() == "Daily task <42>: 'echo foo' enabled at 16:00"
 
 
 @pytest.mark.tasks
