@@ -33,7 +33,7 @@ class Task:
         num = " <{}>:".format(self.task_id) if self.task_id else ""
 
         return "{interval} task{num} '{command}' {status}".format(
-            interval=self.interval, num=num, command=self.command, status=status
+            interval=self.interval.title(), num=num, command=self.command, status=status
         )
 
     @classmethod
