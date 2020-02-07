@@ -16,13 +16,11 @@ from docopt import docopt
 from pythonanywhere.scripts_commons import ScriptSchema, get_task_from_id
 
 
-def main(*, task_id):
+def main(task_id):
     task = get_task_from_id(task_id)
     task.delete_schedule()
 
 
 if __name__ == "__main__":
     schema = ScriptSchema({"<id>": ScriptSchema.id_required})
-    argument = schema.validate_user_input(docopt(__doc__))
-
-    main(**argument)
+    main(**schema.validate_user_input(docopt(__doc__)))

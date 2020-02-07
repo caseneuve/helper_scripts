@@ -29,10 +29,8 @@ from pythonanywhere.scripts_commons import ScriptSchema, get_logger, get_task_fr
 from pythonanywhere.snakesay import snakesay
 
 
-def main(**kwargs):
+def main(*, task_id, command, hour, minute, **kwargs):
     logger = get_logger()
-
-    task_id = kwargs.pop("task_id")
 
     def parse_opts(*opts):
         candidates = [key for key in opts if kwargs.pop(key, None)]

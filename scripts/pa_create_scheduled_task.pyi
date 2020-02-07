@@ -1,1 +1,7 @@
-def main(command: str, hour: int, minute: int, disabled: bool) -> None: ...
+from typing import Optional
+
+from typing_extensions import Literal
+
+def main(
+    command: str, hour: Optional[int], minute: int, disabled: Optional[Literal[True]]
+) -> None: ...

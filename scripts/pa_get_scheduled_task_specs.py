@@ -30,10 +30,8 @@ from pythonanywhere.scripts_commons import ScriptSchema, get_logger, get_task_fr
 from pythonanywhere.snakesay import snakesay
 
 
-def main(**kwargs):
+def main(*, task_id, **kwargs):
     logger = get_logger(set_info=True)
-
-    task_id = kwargs.pop("task_id")
     task = get_task_from_id(task_id)
 
     print_snake = kwargs.pop("snake")
