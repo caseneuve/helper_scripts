@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 
 from pythonanywhere.schedule_api import Schedule
 from pythonanywhere.snakesay import snakesay
@@ -107,10 +108,16 @@ class Task:
             "hour": self.hour,
             "minute": self.minute,
         }
+
+        if params.pop("toggle_interval", False):
+            specs["interval"] = ["hourly", "daily"][self.interval == "hourly"]
+
         specs.update(params)
 
         if specs["interval"] != "daily":
             specs.pop("hour")
+        else:
+            specs["hour"] = datetime.now().hour if not specs["hour"] else specs["hour"]
 
         new_specs = self.schedule.update(self.task_id, specs)
 

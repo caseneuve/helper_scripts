@@ -37,12 +37,6 @@ class ScriptSchema(Schema):
     minute_required = And(Use(int), lambda m: 0 <= m <= 59, error="--minute has to be in 0..59")
     minute = Or(None, minute_required)
     id_required = And(Use(int), error="<id> has to be an integer")
-    interval = Or(
-        None,
-        str,
-        lambda i: i in ("daily", "hourly"),
-        error="--interval has to be 'daily' or 'hourly",
-    )
     string = Or(None, str)
     tabulate_format = Or(
         None,
@@ -56,9 +50,10 @@ class ScriptSchema(Schema):
             "--": "",
             "<": "",
             ">": "",
+            "id": "task_id",
             "printable-": "printable_",
             "snakesay": "snake",
-            "id": "task_id",
+            "toggle-": "toggle_",
         }
         for key, value in to_be_replaced.items():
             string = string.replace(key, value)

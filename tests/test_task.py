@@ -108,7 +108,6 @@ class TestTaskDeleteSchedule:
 
 
 @pytest.mark.tasks
-@pytest.mark.asdf
 class TestTaskUpdateSchedule:
     def test_updates_specs_and_prints_porcelain(self, mocker, example_task, task_specs):
         mock_schedule_update = mocker.patch("pythonanywhere.schedule_api.Schedule.update")
@@ -153,7 +152,7 @@ class TestTaskUpdateSchedule:
         assert mock_snake.call_args == call("Task 42 updated:\n <enabled> from 'True' to 'False'")
         assert mock_update_specs.call_args == call(task_specs)
 
-    def test_changes_daily_to_hourly(self, mocker, example_task, task_specs):
+    def test_changes_daily_to_hourly(self, example_task, task_specs, mocker):
         mock_schedule_update = mocker.patch("pythonanywhere.schedule_api.Schedule.update")
         mock_update_specs = mocker.patch("pythonanywhere.task.Task.update_specs")
         params = {"interval": "hourly"}
@@ -163,6 +162,19 @@ class TestTaskUpdateSchedule:
         example_task.update_schedule(params, porcelain=False)
 
         assert mock_update_specs.call_args == call(task_specs)
+
+    def test_changes_hourly_to_daily_and_sets_hour(self, example_task, mocker):
+        mock_schedule_update = mocker.patch("pythonanywhere.schedule_api.Schedule.update")
+        mock_update_specs = mocker.patch("pythonanywhere.task.Task.update_specs")
+        mock_now = mocker.patch("pythonanywhere.task.datetime")
+        example_task.hour = None
+        example_task.interval = "hourly"
+
+        example_task.update_schedule({"toggle_interval": True}, porcelain=False)
+
+        expected_params = example_task.schedule.update.call_args[0][1]
+        assert expected_params["interval"] == "daily"
+        assert expected_params["hour"] == mock_now.now.return_value.hour
 
     def test_warns_when_nothing_to_update(self, mocker, example_task, task_specs):
         mock_schedule_update = mocker.patch("pythonanywhere.schedule_api.Schedule.update")
