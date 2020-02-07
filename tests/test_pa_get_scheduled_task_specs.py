@@ -4,8 +4,6 @@ from unittest.mock import call
 import pytest
 from scripts.pa_get_scheduled_task_specs import main
 
-USER = getpass.getuser()
-
 
 @pytest.fixture()
 def args():
@@ -25,17 +23,18 @@ def args():
 
 @pytest.fixture()
 def task_from_id(mocker):
+    user = getpass.getuser()
     specs = {
         "can_enable": False,
         "command": "echo foo",
         "enabled": True,
         "hour": 10,
         "interval": "daily",
-        "logfile": "/user/{}/files/foo".format(USER),
+        "logfile": "/user/{}/files/foo".format(user),
         "minute": 23,
         "printable_time": "10:23",
         "task_id": 42,
-        "username": USER,
+        "username": user,
     }
     task = mocker.patch("scripts.pa_get_scheduled_task_specs.get_task_from_id")
     for spec, value in specs.items():
@@ -57,7 +56,7 @@ class TestGetScheduledTaskSpecs:
                 ["enabled", True],
                 ["hour", 10],
                 ["interval", "daily"],
-                ["logfile", "/user/{}/files/foo".format(USER)],
+                ["logfile", "/user/{}/files/foo".format(getpass.getuser())],
                 ["minute", 23],
                 ["printable_time", "10:23"],
             ],
@@ -73,9 +72,21 @@ class TestGetScheduledTaskSpecs:
         assert task_from_id.call_args == call(42)
         expected = (
             "Task 42 specs: <command>: echo foo, <enabled>: True, <hour>: 10, <interval>: daily, "
-            "<logfile>: /user/{}/files/foo, <minute>: 23, <printable_time>: 10:23".format(USER)
+            "<logfile>: /user/{}/files/foo, <minute>: 23, <printable_time>: 10:23".format(
+                getpass.getuser()
+            )
         )
         assert mock_snakesay.call_args == call(expected)
+
+    def test_logs_only_value(self, task_from_id, args, mocker):
+        args.update({"values": True, "printable_time": True})
+        mock_logger = mocker.patch("scripts.pa_get_scheduled_task_specs.get_logger")
+
+        main(**args)
+
+        assert task_from_id.call_args == call(42)
+        assert mock_logger.call_args == call(set_info=True)
+        assert mock_logger.return_value.info.call_args == call("10:23")
 
     def test_prints_one_spec(self, task_from_id, args, mocker):
         args.update({"command": True})
