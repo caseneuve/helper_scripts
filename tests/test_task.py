@@ -26,6 +26,14 @@ def task_specs():
     }
 
 
+@pytest.fixture
+def example_task(task_specs):
+    task = Task()
+    for spec, value in task_specs.items():
+        setattr(task, spec, value)
+    return task
+
+
 @pytest.mark.tasks
 class TestTaskToBeCreated:
     def test_instantiates_new_daily_enabled(self):
@@ -100,26 +108,82 @@ class TestTaskDeleteSchedule:
 
 
 @pytest.mark.tasks
-@pytest.mark.xfail
+@pytest.mark.asdf
 class TestTaskUpdateSchedule:
-    def test_calls_schedule_update(self, mocker):
-        params = {"enabled": True}
+    def test_updates_specs_and_prints_porcelain(self, mocker, example_task, task_specs):
         mock_schedule_update = mocker.patch("pythonanywhere.schedule_api.Schedule.update")
-        mock_update_specs = mocker.patch("pythonanywhere.schedule_api.Schedule.update")
-        mock_get_specs = mocker.patch("pythonanywhere.schedule_api.Schedule.get_specs")
-        mock_update_specs.return_value = {
-            "command": "echo foo",
-            "enabled": False,
-            "interval": "daily",
-            "hour": 10,
-            "minute": 23,
-        }
+        mock_info = mocker.patch("pythonanywhere.task.logger.info")
+        mock_update_specs = mocker.patch("pythonanywhere.task.Task.update_specs")
+        params = {"enabled": False}
+        task_specs.update(params)
+        mock_schedule_update.return_value = task_specs
 
-        Task.from_id(task_id=42).update_schedule(params, porcelain=True)
+        example_task.update_schedule(params, porcelain=True)
 
-        assert mock_update_specs.call_args == call(
-            None,
-            {"command": None, "enabled": True, "interval": None, "minute": None, "hour": None},
+        assert mock_schedule_update.call_args == call(
+            42,
+            {
+                "hour": 16,
+                "minute": 0,
+                "enabled": False,
+                "interval": "daily",
+                "command": "echo foo",
+            },
+        )
+        assert mock_info.call_args == call("Task 42 updated:\n <enabled> from 'True' to 'False'")
+        assert mock_update_specs.call_args == call(task_specs)
+
+    def test_updates_specs_and_snakesays(self, mocker, example_task, task_specs):
+        mock_schedule_update = mocker.patch("pythonanywhere.schedule_api.Schedule.update")
+        mock_info = mocker.patch("pythonanywhere.task.logger.info")
+        mock_snake = mocker.patch("pythonanywhere.task.snakesay")
+        mock_snake.return_value = (
+            "\n< Task 42 updated:  <enabled> from 'True' to 'False' >\n   \\\n    ~<:>>>>>>>>>"
+        )
+        mock_update_specs = mocker.patch("pythonanywhere.task.Task.update_specs")
+        params = {"enabled": False}
+        task_specs.update(params)
+        mock_schedule_update.return_value = task_specs
+
+        example_task.update_schedule(params, porcelain=False)
+
+        assert mock_info.call_args == call(
+            "\n< Task 42 updated:  <enabled> from 'True' to 'False' >\n   \\\n    ~<:>>>>>>>>>"
+        )
+        assert mock_snake.call_args == call("Task 42 updated:\n <enabled> from 'True' to 'False'")
+        assert mock_update_specs.call_args == call(task_specs)
+
+    def test_changes_daily_to_hourly(self, mocker, example_task, task_specs):
+        mock_schedule_update = mocker.patch("pythonanywhere.schedule_api.Schedule.update")
+        mock_update_specs = mocker.patch("pythonanywhere.task.Task.update_specs")
+        params = {"interval": "hourly"}
+        task_specs.update({**params, "hour": None})
+        mock_schedule_update.return_value = task_specs
+
+        example_task.update_schedule(params, porcelain=False)
+
+        assert mock_update_specs.call_args == call(task_specs)
+
+    def test_warns_when_nothing_to_update(self, mocker, example_task, task_specs):
+        mock_schedule_update = mocker.patch("pythonanywhere.schedule_api.Schedule.update")
+        mock_warning = mocker.patch("pythonanywhere.task.logger.warning")
+        mock_update_specs = mocker.patch("pythonanywhere.task.Task.update_specs")
+        mock_schedule_update.return_value = task_specs
+        params = {"enabled": True}
+
+        example_task.update_schedule(params)
+
+        assert mock_warning.call_args == call("Nothing to update!")
+        assert mock_update_specs.call_count == 0
+        assert mock_schedule_update.call_args == call(
+            42,
+            {
+                "hour": 16,
+                "minute": 0,
+                "enabled": True,
+                "interval": "daily",
+                "command": "echo foo",
+            },
         )
 
 

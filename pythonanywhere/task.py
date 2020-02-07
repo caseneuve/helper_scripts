@@ -99,7 +99,7 @@ class Task:
                 attr = "task_id"
             setattr(self, attr, value)
 
-    def update_schedule(self, params, porcelain):
+    def update_schedule(self, params, *, porcelain=False):
         specs = {
             "command": self.command,
             "enabled": self.enabled,
@@ -129,14 +129,14 @@ class Task:
             intro = "Task {} updated:\n".format(self.task_id)
             return "{} {}".format(intro, join_with.join(updated))
 
-        if updated and porcelain:
-            logger.info(make_msg(join_with="\n"))
-        elif updated:
-            logger.info(snakesay(make_msg(join_with=", ")))
+        if updated:
+            if porcelain:
+                logger.info(make_msg(join_with="\n"))
+            else:
+                logger.info(snakesay(make_msg(join_with=", ")))
+            self.update_specs(new_specs)
         else:
             logger.warning("Nothing to update!")
-
-        self.update_specs(new_specs)
 
 
 class TaskList:
