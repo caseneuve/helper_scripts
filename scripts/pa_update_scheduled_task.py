@@ -29,12 +29,12 @@ from pythonanywhere.scripts_commons import ScriptSchema, get_logger, get_task_fr
 from pythonanywhere.snakesay import snakesay
 
 
-def main(*, task_id, command, hour, minute, **kwargs):
+def main(*, task_id, command, hour, minute, interval, **kwargs):
     logger = get_logger()
 
-    def parse_opts(*opts):
+    def parse_opts(*opts, fn=lambda: None):
         candidates = [key for key in opts if kwargs.pop(key, None)]
-        return candidates[0] if candidates else None
+        return candidates[0] if candidates else fn()
 
     if not parse_opts("quiet"):
         logger.setLevel(logging.INFO)
@@ -50,7 +50,7 @@ def main(*, task_id, command, hour, minute, **kwargs):
         params.update({"enabled": enabled})
 
     try:
-        task.update_schedule(params, porcelain)
+        task.update_schedule(params, porcelain=porcelain)
     except Exception as e:
         logger.warning(snakesay(str(e)))
 
@@ -64,9 +64,10 @@ if __name__ == "__main__":
             "--minute": ScriptSchema.minute,
             "--disable": ScriptSchema.boolean,
             "--enable": ScriptSchema.boolean,
-            "--toggle": ScriptSchema.boolean,
-            "--quiet": ScriptSchema.boolean,
+            "--interval": ScriptSchema.interval,
             "--porcelain": ScriptSchema.boolean,
+            "--quiet": ScriptSchema.boolean,
+            "--toggle": ScriptSchema.boolean,
         }
     )
     arguments = schema.validate_user_input(docopt(__doc__))

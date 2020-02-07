@@ -10,13 +10,14 @@ def args():
     yield {
         "task_id": 42,
         "command": None,
-        "hour": None,
-        "minute": None,
         "disable": None,
         "enable": None,
-        "toggle": None,
-        "quiet": None,
+        "hour": None,
+        "interval": None,
+        "minute": None,
         "porcelain": None,
+        "quiet": None,
+        "toggle": None,
     }
 
 
@@ -49,7 +50,7 @@ class TestUpdateScheduledTask:
         main(**args)
 
         assert task_from_id.return_value.update_schedule.call_args == call(
-            {"enabled": True}, "porcelain"
+            {"enabled": True}, porcelain="porcelain"
         )
         assert task_from_id.return_value.update_schedule.call_count == 1
 
