@@ -60,6 +60,7 @@ class ScriptSchema(Schema):
             # to make it more explicit in scripts and enable universal usage of adding any
             # replacement combinations
             "id": "task_id",
+            "no-": "no_",
             "printable-": "printable_",
             "snakesay": "snake",
             "toggle-": "toggle_",

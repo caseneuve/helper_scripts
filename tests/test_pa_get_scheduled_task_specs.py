@@ -17,7 +17,7 @@ def args():
         "minute": None,
         "printable_time": None,
         "snake": None,
-        "values": None,
+        "no_spec": None,
     }
 
 
@@ -79,7 +79,7 @@ class TestGetScheduledTaskSpecs:
         assert mock_snakesay.call_args == call(expected)
 
     def test_logs_only_value(self, task_from_id, args, mocker):
-        args.update({"values": True, "printable_time": True})
+        args.update({"no_spec": True, "printable_time": True})
         mock_logger = mocker.patch("scripts.pa_get_scheduled_task_specs.get_logger")
 
         main(**args)

@@ -1,10 +1,14 @@
 #!/usr/bin/python3.5
 """Get current scheduled task's specs file by task id.
-Available specs are: command, enabled, interval, hour, minute.
-If no option specified, script will output all mentioned specs.
+
+Available specs are: command, enabled, interval, hour, minute, printable-time,
+logfile, expiry. If no option specified, script will output all mentioned specs.
 
 Usage:
-  pa_get_scheduled_task_specs.py <id> [--command] [--enabled] [--interval] [--hour] [--minute] [--printable-time] [--logfile] [--expiry] [--snakesay | --values]
+  pa_get_scheduled_task_specs.py <id> [--command] [--enabled] [--interval]
+                                      [--hour] [--minute] [--printable-time]
+                                      [--logfile] [--expiry]
+                                      [--snakesay | --no-spec]
 
 Options:
   -h --help                      Prints this message
@@ -16,11 +20,21 @@ Options:
   -o --hour                      Prints task's scheduled hour (if daily)
   -p --printable-time            Prints task's scheduled time
   -x --expiry                    Prints task's expiry date
-  -v --values                    Prints only values without spec names
+  -n --no-spec                   Prints only values without spec names
   -s --snakesay                  Turns on snakesay... because why not
 
 Note:
   Task <id> may be found using pa_get_scheduled_tasks_list.py script.
+
+Example:
+  Get all specs for task with id 42:
+
+    pa_get_scheduled_task_specs 42
+
+  Get only logfile name for task with id 42:
+
+    pa_get_scheduled_task_specs 42 --logfile --no-spec
+
 """
 
 from docopt import docopt
@@ -35,7 +49,7 @@ def main(*, task_id, **kwargs):
     task = get_task_from_id(task_id)
 
     print_snake = kwargs.pop("snake")
-    print_only_values = kwargs.pop("values")
+    print_only_values = kwargs.pop("no_spec")
 
     specs = (
         {spec: getattr(task, spec) for spec in kwargs if kwargs[spec]}
@@ -74,7 +88,7 @@ if __name__ == "__main__":
             "--logfile": ScriptSchema.boolean,
             "--minute": ScriptSchema.boolean,
             "--printable-time": ScriptSchema.boolean,
-            "--values": ScriptSchema.boolean,
+            "--no-spec": ScriptSchema.boolean,
             "--snakesay": ScriptSchema.boolean,
         }
     )
