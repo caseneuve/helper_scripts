@@ -98,9 +98,6 @@ def get_logger(set_info=False):
     To toggle message visibility in scripts use `logger.info` calls
     and switch `set_info` value accordingly.
 
-    *Note*: function should be called inside scripts' functions
-    to prevent setting logger during module imports.
-
     :param set_info: boolean (defaults to False)"""
 
     logging.basicConfig(format="%(message)s", stream=sys.stdout)
