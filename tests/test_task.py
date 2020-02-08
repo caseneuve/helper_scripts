@@ -175,8 +175,7 @@ class TestTaskUpdateSchedule:
         assert mock_warning.call_args == call("\n< Nothing to update! >\n   \\\n    ~<:>>>>>>>>>")
         assert mock_update_specs.call_count == 0
         assert mock_schedule_update.call_args == call(
-            42,
-            {"hour": 16, "minute": 0, "enabled": True, "interval": "daily", "command": "echo foo"},
+            42, {"hour": 16, "enabled": True, "interval": "daily", "command": "echo foo"},
         )
 
 
