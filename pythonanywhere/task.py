@@ -109,15 +109,10 @@ class Task:
             "minute": self.minute,
         }
 
-        if params.pop("toggle_interval", False):
-            specs["interval"] = ["hourly", "daily"][self.interval == "hourly"]
-
         specs.update(params)
 
         if specs["interval"] != "daily":
             specs.pop("hour")
-        else:
-            specs["hour"] = datetime.now().hour if not specs["hour"] else specs["hour"]
 
         new_specs = self.schedule.update(self.task_id, specs)
 
@@ -143,7 +138,7 @@ class Task:
                 logger.info(snakesay(make_msg(join_with=", ")))
             self.update_specs(new_specs)
         else:
-            logger.warning("Nothing to update!")
+            logger.warning(snakesay("Nothing to update!"))
 
 
 class TaskList:

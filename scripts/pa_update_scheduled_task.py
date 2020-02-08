@@ -5,6 +5,7 @@ but it won't be created until first execution of the task.
 Usage:
   pa_update_scheduled_task.py <id> [--command=CMD] [--hour=HOUR] [--minute=MINUTE]
                                    [--disable | --enable | --toggle-enabled]
+                                   [--daily | --hourly]
                                    [--quiet | --porcelain]
 
 Options:
@@ -15,8 +16,10 @@ Options:
   -d --disable                   Disables task
   -e --enable                    Enables task
   -t --toggle-enabled            Toggles enable/disable state
-  -i --toggle-interval           Toggles daily/hourly state ('daily' option requires setting
-                                 the --hour, otherwise script's execution hour will be set)
+  -a --daily                     Switches interval to daily (requires setting --hour,
+                                 otherwise script's execution hour will be set)
+  -u --hourly                    Switches interval to hourly (takes precedence over --hour
+                                 meaning that hour will be set to None)
   -q --quiet                     Turns off snake messages
   -p --porcelain                 Prints message in easy-to-parse format
 
@@ -24,6 +27,7 @@ Example: #todo:
 
 """
 import logging
+from datetime import datetime
 
 from docopt import docopt
 
@@ -33,6 +37,12 @@ from pythonanywhere.snakesay import snakesay
 
 def main(*, task_id, **kwargs):
     logger = get_logger()
+
+    if kwargs.pop("hourly", False):
+        kwargs["interval"] = "hourly"
+    if kwargs.pop("daily", False):
+        kwargs["hour"] = kwargs["hour"] if kwargs["hour"] else datetime.now().hour
+        kwargs["interval"] = "daily"
 
     def parse_opts(*opts):
         candidates = [key for key in opts if kwargs.pop(key, None)]
@@ -64,13 +74,14 @@ if __name__ == "__main__":
         {
             "<id>": ScriptSchema.id_required,
             "--command": ScriptSchema.string,
-            "--hour": ScriptSchema.hour,
-            "--minute": ScriptSchema.minute,
+            "--daily": ScriptSchema.boolean,
             "--disable": ScriptSchema.boolean,
             "--enable": ScriptSchema.boolean,
+            "--hour": ScriptSchema.hour,
+            "--hourly": ScriptSchema.boolean,
+            "--minute": ScriptSchema.minute,
             "--porcelain": ScriptSchema.boolean,
             "--quiet": ScriptSchema.boolean,
-            "--toggle-interval": ScriptSchema.boolean,
             "--toggle-enabled": ScriptSchema.boolean,
         }
     )

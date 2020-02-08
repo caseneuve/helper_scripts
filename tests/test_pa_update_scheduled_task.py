@@ -11,10 +11,11 @@ def args():
     yield {
         "task_id": 42,
         "command": None,
+        "daily": None,
         "disable": None,
         "enable": None,
         "hour": None,
-        "interval": None,
+        "hourly": None,
         "minute": None,
         "porcelain": None,
         "quiet": None,
@@ -70,5 +71,24 @@ class TestUpdateScheduledTask:
         main(**args)
 
         assert mock_logger.return_value.warning.call_args == call(
-            "\n< error >\n   \\\n    ~<:>>>>>>>>>",
+            "\n< error >\n   \\\n    ~<:>>>>>>>>>"
+        )
+
+    def test_ensures_proper_daily_params(self, task_from_id, args):
+        args.update({"hourly": True})
+
+        main(**args)
+
+        assert task_from_id.return_value.update_schedule.call_args == call(
+            {"interval": "hourly"}, porcelain=None
+        )
+
+    def test_ensures_proper_hourly_params(self, task_from_id, args, mocker):
+        mock_datetime = mocker.patch("scripts.pa_update_scheduled_task.datetime")
+        args.update({"daily": True})
+
+        main(**args)
+
+        assert task_from_id.return_value.update_schedule.call_args == call(
+            {"interval": "daily", "hour": mock_datetime.now.return_value.hour}, porcelain=None
         )

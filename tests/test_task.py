@@ -163,19 +163,6 @@ class TestTaskUpdateSchedule:
 
         assert mock_update_specs.call_args == call(task_specs)
 
-    def test_changes_hourly_to_daily_and_sets_hour(self, example_task, mocker):
-        mock_schedule_update = mocker.patch("pythonanywhere.schedule_api.Schedule.update")
-        mock_update_specs = mocker.patch("pythonanywhere.task.Task.update_specs")
-        mock_now = mocker.patch("pythonanywhere.task.datetime")
-        example_task.hour = None
-        example_task.interval = "hourly"
-
-        example_task.update_schedule({"toggle_interval": True}, porcelain=False)
-
-        expected_params = example_task.schedule.update.call_args[0][1]
-        assert expected_params["interval"] == "daily"
-        assert expected_params["hour"] == mock_now.now.return_value.hour
-
     def test_warns_when_nothing_to_update(self, mocker, example_task, task_specs):
         mock_schedule_update = mocker.patch("pythonanywhere.schedule_api.Schedule.update")
         mock_warning = mocker.patch("pythonanywhere.task.logger.warning")
@@ -185,17 +172,11 @@ class TestTaskUpdateSchedule:
 
         example_task.update_schedule(params)
 
-        assert mock_warning.call_args == call("Nothing to update!")
+        assert mock_warning.call_args == call("\n< Nothing to update! >\n   \\\n    ~<:>>>>>>>>>")
         assert mock_update_specs.call_count == 0
         assert mock_schedule_update.call_args == call(
             42,
-            {
-                "hour": 16,
-                "minute": 0,
-                "enabled": True,
-                "interval": "daily",
-                "command": "echo foo",
-            },
+            {"hour": 16, "minute": 0, "enabled": True, "interval": "daily", "command": "echo foo"},
         )
 
 
