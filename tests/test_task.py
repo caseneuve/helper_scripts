@@ -83,7 +83,7 @@ class TestTaskCreateSchedule:
     def test_creates_daily_task(self, mocker, task_specs):
         mock_create = mocker.patch("pythonanywhere.schedule_api.Schedule.create")
         mock_create.return_value = task_specs
-        mock_update_specs = mocker.patch("pythonanywhere.task.Task.update_specs")
+        mock_update_specs = mocker.patch("pythonanywhere.task.Task._update_specs")
         task = Task.to_be_created(command="echo foo", hour=16, minute=0, disabled=False)
 
         task.create_schedule()
@@ -123,7 +123,7 @@ class TestTaskUpdateSchedule:
     def test_updates_specs_and_prints_porcelain(self, mocker, example_task, task_specs):
         mock_schedule_update = mocker.patch("pythonanywhere.schedule_api.Schedule.update")
         mock_info = mocker.patch("pythonanywhere.task.logger.info")
-        mock_update_specs = mocker.patch("pythonanywhere.task.Task.update_specs")
+        mock_update_specs = mocker.patch("pythonanywhere.task.Task._update_specs")
         params = {"enabled": False}
         task_specs.update(params)
         mock_schedule_update.return_value = task_specs
@@ -150,7 +150,7 @@ class TestTaskUpdateSchedule:
         mock_snake.return_value = (
             "\n< Task 42 updated:  <enabled> from 'True' to 'False' >\n   \\\n    ~<:>>>>>>>>>"
         )
-        mock_update_specs = mocker.patch("pythonanywhere.task.Task.update_specs")
+        mock_update_specs = mocker.patch("pythonanywhere.task.Task._update_specs")
         params = {"enabled": False}
         task_specs.update(params)
         mock_schedule_update.return_value = task_specs
@@ -165,7 +165,7 @@ class TestTaskUpdateSchedule:
 
     def test_changes_daily_to_hourly(self, example_task, task_specs, mocker):
         mock_schedule_update = mocker.patch("pythonanywhere.schedule_api.Schedule.update")
-        mock_update_specs = mocker.patch("pythonanywhere.task.Task.update_specs")
+        mock_update_specs = mocker.patch("pythonanywhere.task.Task._update_specs")
         params = {"interval": "hourly"}
         task_specs.update({**params, "hour": None})
         mock_schedule_update.return_value = task_specs
@@ -177,7 +177,7 @@ class TestTaskUpdateSchedule:
     def test_warns_when_nothing_to_update(self, mocker, example_task, task_specs):
         mock_schedule_update = mocker.patch("pythonanywhere.schedule_api.Schedule.update")
         mock_warning = mocker.patch("pythonanywhere.task.logger.warning")
-        mock_update_specs = mocker.patch("pythonanywhere.task.Task.update_specs")
+        mock_update_specs = mocker.patch("pythonanywhere.task.Task._update_specs")
         mock_schedule_update.return_value = task_specs
         params = {"enabled": True, "minute": 0}
 
@@ -195,7 +195,7 @@ class TestTaskList:
     def test_instatiates_task_list_calling_proper_methods(self, task_specs, mocker):
         mock_get_list = mocker.patch("pythonanywhere.schedule_api.Schedule.get_list")
         mock_get_list.return_value = [task_specs]
-        mock_from_specs = mocker.patch("pythonanywhere.task.Task.from_specs")
+        mock_from_specs = mocker.patch("pythonanywhere.task.Task._from_specs")
 
         TaskList()
 

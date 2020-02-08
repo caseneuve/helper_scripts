@@ -1,5 +1,8 @@
+"""User interface for pythonanywhere scheduled tasks. Provides two
+classes: `Task` and `TaskList` which should be used by helper scripts
+providing features for programmatic handling of scheduled task."""
+
 import logging
-from datetime import datetime
 
 from pythonanywhere.schedule_api import Schedule
 from pythonanywhere.snakesay import snakesay
@@ -8,6 +11,30 @@ logger = logging.getLogger(name=__name__)
 
 
 class Task:
+    """Class representing pythonanywhere scheduled task.
+
+    Bare instance of the `Task` is just a 'blueprint' for a scheduled
+    task. This means the proper way to create an object representing
+    existing existing task or a task ready to be created a `Task` instance
+    should be created using classmethod constructors: `Task.from_id`,
+    `Task.to_be_created` or Task.from_specs`.
+
+    To create new task use :classmethod:`Task.to_be_created` and call
+    :method:`Task.create_schedule` on it.
+
+    To get an object representing existing task its id is needed. Having a
+    valid id call :classmethod:`Task.from_id` and then execute other
+    actions on the task:
+    - to delete the task use :method:`Task.delete_schedule`,
+    - to update the task use :method:`Task.update_schedule`.
+
+    :classmethod:`Task._from_specs` is intended to to be called with specs
+    returned by API and should not be used directly in scripts.
+
+    `Task` class is API agnostic meaning all API calls are made using the
+    `pythonanywhere.schedule_api.Schedule` interface via `Task.schedule`
+    attribute."""
+
     def __init__(self):
         self.command = None
         self.hour = None
@@ -39,13 +66,29 @@ class Task:
 
     @classmethod
     def from_id(cls, task_id):
+        """Creates representation of existing scheduled task by id.
+
+        :param task_id: existing task id as integer
+        :returns: `Task` instance with actual specs."""
+
         task = cls()
         specs = task.schedule.get_specs(task_id)
-        task.update_specs(specs)
+        task._update_specs(specs)
         return task
 
     @classmethod
     def to_be_created(cls, *, command, minute, hour=None, disabled=False):
+        """Creates object ready to be created via API.
+
+        To create the task call :method:`Task.create_schedule` on it.
+        :param command: command executed by the task
+        :param minute: minute on which task will be executed (required)
+        :param hour: hour on which daily task will be executed
+            (required by daily tasks)
+        :param disabled: set to True to create disabled task (default
+            is True meaning task will be created as enabled)
+        :returns: `Task` instance ready to be created"""
+
         if hour is not None and not (0 <= hour <= 23):
             raise ValueError("Hour has to be in 0..23")
         if not (0 <= minute <= 59):
@@ -60,12 +103,36 @@ class Task:
         return task
 
     @classmethod
-    def from_specs(cls, specs):
+    def _from_specs(cls, specs):
+        """Create object representing scheduled task with specs returned by API.
+
+        *Note* don't use this method in scripts. To create a new task use
+        `Task.to_be_created` constructor.
+
+        :param specs: spec dictionary returned by API.
+        :returns: `Task` instance with actual specs."""
+
         task = cls()
-        task.update_specs(specs)
+        task._update_specs(specs)
         return task
 
+    def _update_specs(self, specs):
+        """Sets `Task` instance's attributes using specs returned by API.
+
+        *Note*: don't use this method in scripts.
+
+        :param specs: spec dictionary returned by API."""
+
+        for attr, value in specs.items():
+            if attr == "id":
+                attr = "task_id"
+            setattr(self, attr, value)
+
     def create_schedule(self):
+        """Creates new scheduled task.
+
+        *Note* use this method on `Task.to_be_created` instance."""
+
         params = {
             "command": self.command,
             "enabled": self.enabled,
@@ -75,12 +142,11 @@ class Task:
         if self.hour:
             params["hour"] = self.hour
 
-        specs = self.schedule.create(params)
-        self.update_specs(specs)
+        self._update_specs(self.schedule.create(params))
 
         mode = "will" if self.enabled else "may be enabled to"
         msg = (
-            "Task '{command}' succesfully created with id {task_id} "
+            "Task '{command}' successfully created with id {task_id} "
             "and {mode} be run {interval} at {printable_time}"
         ).format(
             command=self.command,
@@ -92,16 +158,26 @@ class Task:
         logger.info(snakesay(msg))
 
     def delete_schedule(self):
+        """Deletes existing task.
+
+        *Note*: use this method on `Task.from_id` instance."""
+
         if self.schedule.delete(self.task_id):
             logger.info(snakesay("Task {} deleted!".format(self.task_id)))
 
-    def update_specs(self, specs):
-        for attr, value in specs.items():
-            if attr == "id":
-                attr = "task_id"
-            setattr(self, attr, value)
-
     def update_schedule(self, params, *, porcelain=False):
+        """Updates existing task using `params`.
+
+        *Note*: use this method on `Task.from_id` instance.
+
+        `params` should be one at least one of: command, enabled, interval,
+        hour, minute. `interval` takes precedence over `hour` meaning that
+        `hour` param will be ignored if `interval` is set to 'hourly'.
+
+        :param params: dictionary of specs to update
+        :param porcelain: when True don't use `snakesay` in stdout messages
+            (defaults to False)"""
+
         specs = {
             "command": self.command,
             "enabled": self.enabled,
@@ -144,11 +220,16 @@ class Task:
                 logger.info(make_msg(join_with="\n"))
             else:
                 logger.info(snakesay(make_msg(join_with=", ")))
-            self.update_specs(new_specs)
+            self._update_specs(new_specs)
         else:
             logger.warning(snakesay("Nothing to update!"))
 
 
 class TaskList:
+    """Creates user's tasks representation using `Task` class and specs
+    returned by API.
+
+    Tasks are stored in `TaskList.tasks` variable."""
+
     def __init__(self):
-        self.tasks = [Task.from_specs(specs) for specs in Schedule().get_list()]
+        self.tasks = [Task._from_specs(specs) for specs in Schedule().get_list()]
