@@ -28,7 +28,7 @@ class Task:
     - to delete the task use :method:`Task.delete_schedule`,
     - to update the task use :method:`Task.update_schedule`.
 
-    :classmethod:`Task._from_specs` is intended to to be called with specs
+    :classmethod:`Task.from_specs` is intended to to be called with specs
     returned by API and should not be used directly in scripts.
 
     `Task` class is API agnostic meaning all API calls are made using the
@@ -103,7 +103,7 @@ class Task:
         return task
 
     @classmethod
-    def _from_specs(cls, specs):
+    def from_specs(cls, specs):
         """Create object representing scheduled task with specs returned by API.
 
         *Note* don't use this method in scripts. To create a new task use
@@ -232,4 +232,4 @@ class TaskList:
     Tasks are stored in `TaskList.tasks` variable."""
 
     def __init__(self):
-        self.tasks = [Task._from_specs(specs) for specs in Schedule().get_list()]
+        self.tasks = [Task.from_specs(specs) for specs in Schedule().get_list()]

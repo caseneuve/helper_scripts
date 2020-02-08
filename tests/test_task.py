@@ -195,7 +195,7 @@ class TestTaskList:
     def test_instatiates_task_list_calling_proper_methods(self, task_specs, mocker):
         mock_get_list = mocker.patch("pythonanywhere.schedule_api.Schedule.get_list")
         mock_get_list.return_value = [task_specs]
-        mock_from_specs = mocker.patch("pythonanywhere.task.Task._from_specs")
+        mock_from_specs = mocker.patch("pythonanywhere.task.Task.from_specs")
 
         TaskList()
 
