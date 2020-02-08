@@ -12,7 +12,7 @@ Usage:
   pa_update_scheduled_task.py <id> [--command=CMD] [--hour=HOUR] [--minute=MINUTE]
                                    [--disable | --enable | --toggle-enabled]
                                    [--daily | --hourly]
-                                   [--quiet | --porcelain]
+                                   [--no-snake | --porcelain]
 
 Options:
   -h --help                      Print this message
