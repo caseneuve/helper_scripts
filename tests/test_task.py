@@ -168,7 +168,7 @@ class TestTaskUpdateSchedule:
         mock_warning = mocker.patch("pythonanywhere.task.logger.warning")
         mock_update_specs = mocker.patch("pythonanywhere.task.Task.update_specs")
         mock_schedule_update.return_value = task_specs
-        params = {"enabled": True}
+        params = {"enabled": True, "minute": 0}
 
         example_task.update_schedule(params)
 
