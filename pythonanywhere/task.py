@@ -212,8 +212,9 @@ class Task:
         updated = [make_spec_str(key, val[0], val[1]) for key, val in diff.items()]
 
         def make_msg(join_with):
-            intro = "Task {} updated:\n".format(self.task_id)
-            return "{} {}".format(intro, join_with.join(updated))
+            fill = " " if join_with == ", " else join_with
+            intro = "Task {} updated:{}".format(self.task_id, fill)
+            return "{}{}".format(intro, join_with.join(updated))
 
         if updated:
             if porcelain:

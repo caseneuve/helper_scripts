@@ -140,7 +140,7 @@ class TestTaskUpdateSchedule:
                 "command": "echo foo",
             },
         )
-        assert mock_info.call_args == call("Task 42 updated:\n <enabled> from 'True' to 'False'")
+        assert mock_info.call_args == call("Task 42 updated:\n<enabled> from 'True' to 'False'")
         assert mock_update_specs.call_args == call(task_specs)
 
     def test_updates_specs_and_snakesays(self, mocker, example_task, task_specs):
@@ -148,7 +148,7 @@ class TestTaskUpdateSchedule:
         mock_info = mocker.patch("pythonanywhere.task.logger.info")
         mock_snake = mocker.patch("pythonanywhere.task.snakesay")
         mock_snake.return_value = (
-            "\n< Task 42 updated:  <enabled> from 'True' to 'False' >\n   \\\n    ~<:>>>>>>>>>"
+            "\n< Task 42 updated: <enabled> from 'True' to 'False' >\n   \\\n    ~<:>>>>>>>>>"
         )
         mock_update_specs = mocker.patch("pythonanywhere.task.Task._update_specs")
         params = {"enabled": False}
@@ -158,9 +158,9 @@ class TestTaskUpdateSchedule:
         example_task.update_schedule(params, porcelain=False)
 
         assert mock_info.call_args == call(
-            "\n< Task 42 updated:  <enabled> from 'True' to 'False' >\n   \\\n    ~<:>>>>>>>>>"
+            "\n< Task 42 updated: <enabled> from 'True' to 'False' >\n   \\\n    ~<:>>>>>>>>>"
         )
-        assert mock_snake.call_args == call("Task 42 updated:\n <enabled> from 'True' to 'False'")
+        assert mock_snake.call_args == call("Task 42 updated: <enabled> from 'True' to 'False'")
         assert mock_update_specs.call_args == call(task_specs)
 
     def test_changes_daily_to_hourly(self, example_task, task_specs, mocker):
