@@ -3,7 +3,7 @@
 
 Note that logfile name will change after updating the task but it won't be created
 until first execution of the task.
-To change interval from hourly to daily use --daily flag or provide --hour. When --daily
+To change interval from hourly to daily use --daily flag and provide --hour. When --daily
 flag is not accompanied with --hour new hour for the task will be automatically set to
 current hour.
 When changing interval from daily to hourly --hour flag is ignored.
