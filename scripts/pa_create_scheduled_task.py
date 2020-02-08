@@ -19,8 +19,7 @@ Example:
 
   Create an inactive hourly task to be run 27 minutes past every hour:
 
-    pa_create_scheduled_task.py --command "echo bar" --minute 27 --disabled
-"""
+    pa_create_scheduled_task.py --command "echo bar" --minute 27 --disabled"""
 
 from docopt import docopt
 

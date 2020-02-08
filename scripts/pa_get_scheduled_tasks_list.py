@@ -1,5 +1,5 @@
 #!/usr/bin/python3.5
-"""Get list of user's scheduled tasks as a table with default columns:
+"""Get list of user's scheduled tasks as a table with columns:
 id, interval, at (hour:minute/minute past), enabled, command.
 
 Usage:
@@ -8,8 +8,8 @@ Usage:
 Options:
   -h --help                      Print this message
   -f --format=<format>           Table format supported by tabulate
-                                 (defaults to 'simple')
-"""
+                                 (defaults to 'simple')"""
+
 from docopt import docopt
 from tabulate import tabulate
 
