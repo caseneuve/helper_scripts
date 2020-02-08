@@ -15,8 +15,8 @@ class Schedule:
     actions. Covers 'GET' and 'POST' methods for tasks list, as well as
     'GET', 'PATCH' and 'DELETE' methods for task with id.
 
-    Use :method: `Schedule.create` to create new task.
     Use :method: `Schedule.get_list` to get all tasks list.
+    Use :method: `Schedule.create` to create new task.
     Use :method: `Schedule.get_specs` to get existing task specs.
     Use :method: `Schedule.delete` to delete existing task.
     Use :method: `Schedule.update` to udpate existing task."""
