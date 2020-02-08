@@ -1,4 +1,4 @@
-"""User interface for pythonanywhere scheduled tasks. Provides two
+"""User interface for PythonAnywhere scheduled tasks. Provides two
 classes: `Task` and `TaskList` which should be used by helper scripts
 providing features for programmatic handling of scheduled task."""
 
@@ -11,7 +11,7 @@ logger = logging.getLogger(name=__name__)
 
 
 class Task:
-    """Class representing pythonanywhere scheduled task.
+    """Class representing PythonAnywhere scheduled task.
 
     Bare instance of the `Task` is just a 'blueprint' for a scheduled
     task. This means the proper way to create an object representing

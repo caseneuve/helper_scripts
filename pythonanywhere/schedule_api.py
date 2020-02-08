@@ -1,4 +1,4 @@
-""" Interface speaking with pythonanywhere API providing methods for scheduled tasks.
+""" Interface speaking with PythonAnywhere API providing methods for scheduled tasks.
 *Don't use* `Schedule` :class: in helper scripts, use `task.Task` instead."""
 
 import getpass
@@ -7,7 +7,7 @@ from pythonanywhere.api import call_api, get_api_endpoint
 
 
 class Schedule:
-    """Interface for pythonanywhere scheduled tasks API.
+    """Interface for PythonAnywhere scheduled tasks API.
 
     Uses `pythonanywhere.api` :method: `get_api_endpoint` to create url,
     which is stored in a class variable `Schedule.base_url`, then calls
