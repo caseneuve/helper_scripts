@@ -58,7 +58,7 @@ class TestUpdateScheduledTask:
 
     def test_turns_off_snakesay(self, mocker, args, task_from_id):
         mock_logger = mocker.patch("scripts.pa_update_scheduled_task.get_logger")
-        args.update({"no_snake": True})
+        args.update({"quiet": True})
 
         main(**args)
 

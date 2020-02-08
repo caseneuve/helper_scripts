@@ -12,7 +12,7 @@ Usage:
   pa_update_scheduled_task.py <id> [--command=CMD] [--hour=HOUR] [--minute=MINUTE]
                                    [--disable | --enable | --toggle-enabled]
                                    [--daily | --hourly]
-                                   [--no-snake | --porcelain]
+                                   [--quiet | --porcelain]
 
 Options:
   -h --help                      Print this message
@@ -26,7 +26,7 @@ Options:
                                  otherwise script's execution hour will be set)
   -u --hourly                    Switches interval to hourly (takes precedence over --hour
                                  meaning that hour will be set to None)
-  -n --no-snake                  Turns off snake messages
+  -n --quiet                     Turns off messages
   -p --porcelain                 Prints message in easy-to-parse format
 
 Example:
@@ -64,7 +64,7 @@ def main(*, task_id, **kwargs):
         candidates = [key for key in opts if kwargs.pop(key, None)]
         return candidates[0] if candidates else None
 
-    if not parse_opts("no_snake"):
+    if not parse_opts("quiet"):
         logger.setLevel(logging.INFO)
 
     porcelain = parse_opts("porcelain")
@@ -97,7 +97,7 @@ if __name__ == "__main__":
             "--hourly": ScriptSchema.boolean,
             "--minute": ScriptSchema.minute,
             "--porcelain": ScriptSchema.boolean,
-            "--no-snake": ScriptSchema.boolean,
+            "--quiet": ScriptSchema.boolean,
             "--toggle-enabled": ScriptSchema.boolean,
         }
     )
