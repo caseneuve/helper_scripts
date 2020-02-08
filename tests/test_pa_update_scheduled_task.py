@@ -56,9 +56,9 @@ class TestUpdateScheduledTask:
         )
         assert task_from_id.return_value.update_schedule.call_count == 1
 
-    def test_sets_quiet(self, mocker, args, task_from_id):
+    def test_turns_off_snakesay(self, mocker, args, task_from_id):
         mock_logger = mocker.patch("scripts.pa_update_scheduled_task.get_logger")
-        args.update({"quiet": True})
+        args.update({"no_snake": True})
 
         main(**args)
 

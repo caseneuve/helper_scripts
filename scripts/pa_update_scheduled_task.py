@@ -1,6 +1,12 @@
 #!/usr/bin/python3.5
-"""Update a scheduled task. Note that logfile name will change after updating the task
-but it won't be created until first execution of the task.
+"""Update a scheduled task using id and proper specs.
+
+Note that logfile name will change after updating the task but it won't be created
+until first execution of the task.
+To change interval from hourly to daily use --daily flag or provide --hour. When --daily
+flag is not accompanied with --hour new hour for the task will be automatically set to
+current hour.
+When changing interval from daily to hourly --hour flag is ignored.
 
 Usage:
   pa_update_scheduled_task.py <id> [--command=CMD] [--hour=HOUR] [--minute=MINUTE]
@@ -20,12 +26,22 @@ Options:
                                  otherwise script's execution hour will be set)
   -u --hourly                    Switches interval to hourly (takes precedence over --hour
                                  meaning that hour will be set to None)
-  -q --quiet                     Turns off snake messages
+  -n --no-snake                  Turns off snake messages
   -p --porcelain                 Prints message in easy-to-parse format
 
-Example: #todo:
+Example:
+  Change command for a scheduled task 42:
 
-"""
+    pa_update_scheduled_task 42 --command "echo new command"
+
+  Change interval of the task 42 from hourly to daily to be run at 10 am:
+
+    pa_update_scheduled_task 42 --hour 10
+
+  Change interval of the task 42 from daily to hourly and set new minute:
+
+    pa_update_scheduled_task 42 --minute 13 --hourly"""
+
 import logging
 from datetime import datetime
 
@@ -48,7 +64,7 @@ def main(*, task_id, **kwargs):
         candidates = [key for key in opts if kwargs.pop(key, None)]
         return candidates[0] if candidates else None
 
-    if not parse_opts("quiet"):
+    if not parse_opts("no_snake"):
         logger.setLevel(logging.INFO)
 
     porcelain = parse_opts("porcelain")
@@ -81,7 +97,7 @@ if __name__ == "__main__":
             "--hourly": ScriptSchema.boolean,
             "--minute": ScriptSchema.minute,
             "--porcelain": ScriptSchema.boolean,
-            "--quiet": ScriptSchema.boolean,
+            "--no-snake": ScriptSchema.boolean,
             "--toggle-enabled": ScriptSchema.boolean,
         }
     )
