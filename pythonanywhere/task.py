@@ -111,8 +111,15 @@ class Task:
 
         specs.update(params)
 
-        if specs["interval"] != "daily":
+        if (
+            (specs["interval"] != "daily")
+            or (params.get("interval") == "daily" and self.hour)
+            or (params.get("hour") == self.hour)
+        ):
             specs.pop("hour")
+
+        if params.get("minute") == self.minute:
+            specs.pop("minute")
 
         new_specs = self.schedule.update(self.task_id, specs)
 

@@ -38,9 +38,9 @@ from pythonanywhere.snakesay import snakesay
 def main(*, task_id, **kwargs):
     logger = get_logger()
 
-    if kwargs.pop("hourly", False):
+    if kwargs.pop("hourly"):
         kwargs["interval"] = "hourly"
-    if kwargs.pop("daily", False):
+    if kwargs.pop("daily"):
         kwargs["hour"] = kwargs["hour"] if kwargs["hour"] else datetime.now().hour
         kwargs["interval"] = "daily"
 
