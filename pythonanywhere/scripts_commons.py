@@ -10,27 +10,13 @@ from pythonanywhere.task import Task
 
 logger = logging.getLogger(__name__)
 
+# fmt: off
 tabulate_formats = [
-    "plain",
-    "simple",
-    "github",
-    "grid",
-    "fancy_grid",
-    "pipe",
-    "orgtbl",
-    "jira",
-    "presto",
-    "psql",
-    "rst",
-    "mediawiki",
-    "moinmoin",
-    "youtrack",
-    "html",
-    "latex",
-    "latex_raw",
-    "latex_booktabs",
-    "textile",
+    "plain", "simple", "github", "grid", "fancy_grid", "pipe", "orgtbl", "jira",
+    "presto", "psql", "rst", "mediawiki", "moinmoin", "youtrack", "html", "latex",
+    "latex_raw", "latex_booktabs", "textile",
 ]
+# fmt: on
 
 
 class ScriptSchema(Schema):
