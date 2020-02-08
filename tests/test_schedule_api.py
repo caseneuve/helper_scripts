@@ -87,17 +87,16 @@ class TestScheduleCreate:
 
 @pytest.mark.tasks
 class TestScheduleDelete:
-    def test_deletes_task(self, api_token, api_responses, task_base_url, mocker):
-        mock_snakesay = mocker.patch("pythonanywhere.schedule_api.snakesay")
+    def test_deletes_task(self, api_token, api_responses, task_base_url):
         url = task_base_url + "42/"
         api_responses.add(responses.DELETE, url=url, status=204)
 
-        Schedule().delete(42)
+        result = Schedule().delete(42)
 
         post = api_responses.calls[0]
         assert post.request.url == url
         assert post.request.body == None
-        assert mock_snakesay.call_args == call("Task 42 deleted!")
+        assert result is True
 
     def test_raises_because_attempt_to_delete_nonexisting_task(
         self, api_token, api_responses, task_base_url

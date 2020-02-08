@@ -20,12 +20,14 @@ class Schedule:
             )
 
     def delete(self, task_id):
+        """
+        """
         result = call_api(
             "{base_url}{task_id}/".format(base_url=self.base_url, task_id=task_id), "DELETE"
         )
 
         if result.status_code == 204:
-            print(snakesay("Task {task_id} deleted!".format(task_id=task_id)))
+            return True
 
         if not result.ok:
             raise Exception(

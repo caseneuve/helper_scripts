@@ -92,7 +92,8 @@ class Task:
         logger.info(snakesay(msg))
 
     def delete_schedule(self):
-        self.schedule.delete(self.task_id)
+        if self.schedule.delete(self.task_id):
+            logger.info(snakesay("Task {} deleted!".format(self.task_id)))
 
     def update_specs(self, specs):
         for attr, value in specs.items():

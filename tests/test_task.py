@@ -54,6 +54,16 @@ class TestTaskToBeCreated:
         assert task.enabled is False
         assert task.__repr__() == "Hourly task 'myscript.py' ready to be created"
 
+    def test_raises_when_to_be_created_gets_wrong_hour(self):
+        with pytest.raises(ValueError) as e:
+            Task.to_be_created(command="echo foo", hour=25, minute=1)
+        assert str(e.value) == "Hour has to be in 0..23"
+
+    def test_raises_when_to_be_created_gets_wrong_minute(self):
+        with pytest.raises(ValueError) as e:
+            Task.to_be_created(command="echo foo", hour=12, minute=78)
+        assert str(e.value) == "Minute has to be in 0..59"
+
 
 @pytest.mark.tasks
 class TestTaskFromId:
@@ -87,24 +97,25 @@ class TestTaskCreateSchedule:
 
 @pytest.mark.tasks
 class TestTaskDeleteSchedule:
-    def test_calls_schedule_delete(self, task_specs, mocker):
+    def test_calls_schedule_delete(self, example_task, mocker):
         mock_delete = mocker.patch("pythonanywhere.schedule_api.Schedule.delete")
-        mock_get_specs = mocker.patch("pythonanywhere.schedule_api.Schedule.get_specs")
-        mock_get_specs.return_value = task_specs
+        mock_delete.return_value = True
+        mock_logger = mocker.patch("pythonanywhere.task.logger.info")
 
-        Task.from_id(task_id=42).delete_schedule()
+        example_task.delete_schedule()
 
         assert mock_delete.call_args == call(42)
+        assert mock_logger.call_args == call("\n< Task 42 deleted! >\n   \\\n    ~<:>>>>>>>>>")
 
-    def test_raises_when_to_be_created_gets_wrong_hour(self):
-        with pytest.raises(ValueError) as e:
-            Task.to_be_created(command="echo foo", hour=25, minute=1)
-        assert str(e.value) == "Hour has to be in 0..23"
+    def test_raises_when_schedule_delete_fails(self, mocker):
+        mock_delete = mocker.patch("pythonanywhere.schedule_api.Schedule.delete")
+        mock_delete.side_effect = Exception("error msg")
 
-    def test_raises_when_to_be_created_gets_wrong_minute(self):
-        with pytest.raises(ValueError) as e:
-            Task.to_be_created(command="echo foo", hour=12, minute=78)
-        assert str(e.value) == "Minute has to be in 0..59"
+        with pytest.raises(Exception) as e:
+            Task().delete_schedule()
+
+        assert str(e.value) == "error msg"
+        assert mock_delete.call_count == 1
 
 
 @pytest.mark.tasks
