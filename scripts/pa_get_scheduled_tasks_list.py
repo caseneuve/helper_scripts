@@ -10,8 +10,6 @@ Options:
   -f --format=<format>           Table format supported by tabulate
                                  (defaults to 'simple')
 """
-import logging
-
 from docopt import docopt
 from tabulate import tabulate
 
