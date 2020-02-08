@@ -182,12 +182,13 @@ class TestTaskUpdateSchedule:
 
 @pytest.mark.tasks
 class TestTaskList:
-    def test_returns_task_list(self, task_specs, mocker):
+    def test_instatiates_task_list_calling_proper_methods(self, task_specs, mocker):
         mock_get_list = mocker.patch("pythonanywhere.schedule_api.Schedule.get_list")
         mock_get_list.return_value = [task_specs]
         mock_from_specs = mocker.patch("pythonanywhere.task.Task.from_specs")
 
-        task_list = TaskList().tasks
+        TaskList()
 
         assert mock_from_specs.call_args == call(task_specs)
+        assert mock_from_specs.call_count == len(mock_get_list.return_value)
         assert mock_get_list.call_count == 1
