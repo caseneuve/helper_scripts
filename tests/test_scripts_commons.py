@@ -5,7 +5,6 @@ from unittest.mock import call
 import pytest
 
 from pythonanywhere.scripts_commons import (
-    SchemaError,
     ScriptSchema,
     get_logger,
     get_task_from_id,
