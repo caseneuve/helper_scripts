@@ -14,15 +14,24 @@ from docopt import docopt
 from tabulate import tabulate
 
 from pythonanywhere.scripts_commons import ScriptSchema, get_logger
+from pythonanywhere.snakesay import snakesay
 from pythonanywhere.task import TaskList
 
 
 def main(tablefmt):
     logger = get_logger(set_info=True)
-    headers = "id", "interval", "at", "enabled", "command"
+    headers = "id", "interval", "at", "status", "command"
     attrs = "task_id", "interval", "printable_time", "enabled", "command"
-    table = [[getattr(task, attr) for attr in attrs] for task in TaskList().tasks]
-    logger.info(tabulate(table, headers, tablefmt=tablefmt))
+
+    def convert(task, attr):
+        value = getattr(task, attr)
+        if attr == "enabled":
+            value = "enabled" if value else "disabled"
+        return value
+
+    table = [[convert(task, attr) for attr in attrs] for task in TaskList().tasks]
+    msg = tabulate(table, headers, tablefmt=tablefmt) if table else snakesay("No active tasks")
+    logger.info(msg)
 
 
 if __name__ == "__main__":

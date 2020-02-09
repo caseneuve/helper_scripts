@@ -97,6 +97,9 @@ if __name__ == "__main__":
             "--snakesay": ScriptSchema.boolean,
         }
     )
-    arguments = schema.validate_user_input(docopt(__doc__))
+    arguments = schema.validate_user_input(
+        docopt(__doc__),
+        conversions={"no-": "no_", "printable-": "printable_", "snakesay": "snake"},
+    )
 
     main(**arguments)
