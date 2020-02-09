@@ -4,10 +4,10 @@ from typing_extensions import Literal
 
 def main(
     *,
-    task_id: int,
+    task_id: str,
     command: Optional[str],
-    hour: Optional[int],
-    minute: Optional[int],
+    hour: Optional[str],
+    minute: Optional[str],
     **kwargs: Optional[Literal[True]]
 ) -> None: ...
     def parse_opts(*opts: str) -> str: ...

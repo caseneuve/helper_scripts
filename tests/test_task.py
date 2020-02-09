@@ -48,7 +48,7 @@ class TestTaskToBeCreated:
     def test_instantiates_new_hourly_disabled(self, mocker):
         task = Task.to_be_created(command="myscript.py", hour=None, minute=10, disabled=True)
         assert task.command == "myscript.py"
-        assert task.hour == None
+        assert task.hour is None
         assert task.minute == 10
         assert task.interval == "hourly"
         assert task.enabled is False

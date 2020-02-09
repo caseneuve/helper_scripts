@@ -95,7 +95,7 @@ class TestScheduleDelete:
 
         post = api_responses.calls[0]
         assert post.request.url == url
-        assert post.request.body == None
+        assert post.request.body is None
         assert result is True
 
     def test_raises_because_attempt_to_delete_nonexisting_task(
