@@ -1,31 +1,34 @@
 #!/usr/bin/python3.5
 """Update a scheduled task using id and proper specs.
 
-Note that logfile name will change after updating the task but it won't be created
-until first execution of the task.
-To change interval from hourly to daily use --daily flag and provide --hour. When --daily
-flag is not accompanied with --hour new hour for the task will be automatically set to
-current hour.
+Note that logfile name will change after updating the task but it won't be
+created until first execution of the task.
+To change interval from hourly to daily use --daily flag and provide --hour.
+When --daily flag is not accompanied with --hour, new hour for the task
+will be automatically set to current hour.
 When changing interval from daily to hourly --hour flag is ignored.
 
 Usage:
-  pa_update_scheduled_task.py <id> [--command=CMD] [--hour=HOUR] [--minute=MINUTE]
+  pa_update_scheduled_task.py <id> [--command COMMAND]
+                                   [--hour HOUR] [--minute MINUTE]
                                    [--disable | --enable | --toggle-enabled]
                                    [--daily | --hourly]
                                    [--quiet | --porcelain]
 
 Options:
-  -h --help                      Print this message
-  -c --command=CMD               Changes command to CMD (multiword commands should be quoted)
-  -o --hour=HOUR                 Changes hour to HOUR (in 24h format)
-  -m --minute=MINUTE             Changes minute to MINUTE
+  -h, --help                     Print this message
+  -c, --command COMMAND          Changes command to COMMAND (multiword commands
+                                 should be quoted)
+  -o, --hour HOUR                Changes hour to HOUR (in 24h format)
+  -m, --minute MINUTE            Changes minute to MINUTE
   -d --disable                   Disables task
   -e --enable                    Enables task
   -t --toggle-enabled            Toggles enable/disable state
-  -a --daily                     Switches interval to daily (requires setting --hour,
-                                 otherwise script's execution hour will be set)
-  -u --hourly                    Switches interval to hourly (takes precedence over --hour
-                                 meaning that hour will be set to None)
+  -a --daily                     Switches interval to daily (requires setting
+                                 --hour, otherwise script's execution hour will
+                                 be set)
+  -u --hourly                    Switches interval to hourly (takes precedence
+                                 over --hour, i.e. sets hour to None)
   -n --quiet                     Turns off messages
   -p --porcelain                 Prints message in easy-to-parse format
 

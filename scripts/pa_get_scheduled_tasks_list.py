@@ -3,11 +3,11 @@
 id, interval, at (hour:minute/minute past), enabled, command.
 
 Usage:
-  pa_get_scheduled_tasks_list.py [--format=<format>]
+  pa_get_scheduled_tasks_list.py [--format TABLEFMT]
 
 Options:
   -h --help                      Print this message
-  -f --format=<format>           Table format supported by tabulate
+  -f --format TABLEFMT           Table format supported by tabulate
                                  (defaults to 'simple')"""
 
 from docopt import docopt

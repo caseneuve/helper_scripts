@@ -33,9 +33,7 @@ Example:
 
   Get only logfile name for task with id 42:
 
-    pa_get_scheduled_task_specs 42 --logfile --no-spec
-
-"""
+    pa_get_scheduled_task_specs 42 --logfile --no-spec"""
 
 from docopt import docopt
 from tabulate import tabulate
