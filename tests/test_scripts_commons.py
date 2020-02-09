@@ -75,10 +75,10 @@ class TestScriptSchema:
         assert mock_warning.call_count == 1
         assert mock_snake.call_args == call("--minute has to be in 0..59")
 
-    def test_validates_id(self):
+    def test_validates_using_conversions(self):
         schema = ScriptSchema({"<id>": ScriptSchema.id_required})
 
-        result = schema.validate_user_input({"<id>": 42})
+        result = schema.validate_user_input({"<id>": 42}, conversions={"id": "task_id"})
 
         assert result == {"task_id": 42}
 
@@ -120,15 +120,15 @@ class TestScriptSchema:
 
 @pytest.mark.tasks
 class TestScriptSchemaConvert:
-    def test_replaces_strings(self):
-        was = ("--option", "<arg>", "--printable-time", "--snakesay", "<id>")
-        should_be = ("option", "arg", "printable_time", "snake", "task_id")
+    def test_replaces_default_strings(self):
+        was = ("--option", "<arg>")
+        should_be = ("option", "arg")
 
         for string, expected in zip(was, should_be):
-            assert ScriptSchema.convert(string) == expected
+            assert ScriptSchema({}).convert(string) == expected
 
     def test_returns_unchanged_string(self):
-        assert ScriptSchema.convert("will_not_be_changed") == "will_not_be_changed"
+        assert ScriptSchema({}).convert("will_not_be_changed") == "will_not_be_changed"
 
 
 @pytest.mark.tasks
