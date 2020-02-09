@@ -27,7 +27,9 @@ class ScriptSchema(Schema):
     as `Schema.validate` but returns a dictionary with converted keys
     ready to be used as function keyword arguments, e.g. validated
     arguments {"--foo": bar, "<baz>": qux} will be be converted to
-    {"foo": bar, "baz": qux}.
+    {"foo": bar, "baz": qux}. Additional conversion rules may be added as
+    dictionary passed to `validate_user_input` :method: as `conversions`
+    :param:.
 
     Use :method:`ScriptSchema.validate_user_input` to obtain kwarg
     dictionary."""
@@ -65,7 +67,8 @@ class ScriptSchema(Schema):
         `ScriptSchema.convert` :method: to be later used as kwarg
         arguments. Universal rules for conversion are stored in
         `replacements` class variable and may be updated using
-        `conversions` kwarg.
+        `conversions` kwarg. Use optional `conversions` :param: to add
+        custom replacement rules.
 
         :param arguments: dictionary of cli arguments provided be
         (e.g.) `docopt`
@@ -109,7 +112,8 @@ def get_task_from_id(task_id, no_exit=False):
     """Get `Task.from_id` instance representing existing task.
 
     :param task_id: integer (should be a valid task id)
-    :param no_exit: if False sys.exit will be called when exception is caught"""
+    :param no_exit: if (default) False sys.exit will be called when
+      exception is caught"""
 
     try:
         return Task.from_id(task_id)
