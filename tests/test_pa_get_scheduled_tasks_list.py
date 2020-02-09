@@ -8,7 +8,7 @@ from pythonanywhere.task import Task
 
 
 @pytest.fixture
-def example_tasks_list():
+def task_list(mocker):
     username = getpass.getuser()
     specs1 = {
         "can_enable": False,
@@ -26,25 +26,37 @@ def example_tasks_list():
         "user": username,
     }
     specs2 = {**specs1}
-    specs2.update({"command": "echo bar", "hour": 17, "minute": 43, "printable_time": "17:43"})
-    yield [specs1, specs2]
+    specs2.update({"id": 43, "enabled": False})
+    mock_task_list = mocker.patch("scripts.pa_get_scheduled_tasks_list.TaskList")
+    mock_task_list.return_value.tasks = [Task.from_api_specs(specs) for specs in (specs1, specs2)]
+    return mock_task_list
 
 
 @pytest.mark.tasks
-def test_logs_task_list_as_table(example_tasks_list, mocker):
-    tasks = [Task.from_api_specs(specs) for specs in example_tasks_list]
-    mock_TaskList = mocker.patch("scripts.pa_get_scheduled_tasks_list.TaskList")
-    mock_TaskList.return_value.tasks = tasks
-    mock_tabulate = mocker.patch("scripts.pa_get_scheduled_tasks_list.tabulate")
-    mock_logger = mocker.patch("scripts.pa_get_scheduled_tasks_list.get_logger")
+class TestGetScheduledTasksList:
+    def test_logs_task_list_as_table(self, task_list, mocker):
+        mock_tabulate = mocker.patch("scripts.pa_get_scheduled_tasks_list.tabulate")
+        mock_logger = mocker.patch("scripts.pa_get_scheduled_tasks_list.get_logger")
 
-    main(tablefmt="orgtbl")
+        main(tablefmt="orgtbl")
 
-    headers = "id", "interval", "at", "enabled", "command"
-    attrs = "task_id", "interval", "printable_time", "enabled", "command"
-    table = [[getattr(task, attr) for attr in attrs] for task in tasks]
+        headers = "id", "interval", "at", "status", "command"
+        attrs = "task_id", "interval", "printable_time", "enabled", "command"
+        table = [[getattr(task, attr) for attr in attrs] for task in task_list.return_value.tasks]
+        table = [
+            ["enabled" if spec == True else "disabled" if spec == False else spec for spec in row]
+            for row in table
+        ]
 
-    assert mock_TaskList.call_count == 1
-    assert mock_tabulate.call_args == call(table, headers, tablefmt="orgtbl")
-    assert mock_logger.call_args == call(set_info=True)
-    assert mock_logger.return_value.info.call_count == 1
+        assert task_list.call_count == 1
+        assert mock_tabulate.call_args == call(table, headers, tablefmt="orgtbl")
+        assert mock_logger.call_args == call(set_info=True)
+        assert mock_logger.return_value.info.call_count == 1
+
+    def test_snakesays_when_no_active_tasks(self, task_list, mocker):
+        mock_snake = mocker.patch("scripts.pa_get_scheduled_tasks_list.snakesay")
+        task_list.return_value.tasks = []
+
+        main(tablefmt="simple")
+
+        assert mock_snake.call_args == call("No active tasks")
