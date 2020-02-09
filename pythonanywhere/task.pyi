@@ -1,4 +1,4 @@
-from typing import List, Optional, Type, TypeVar
+from typing import List, Optional, Type, TypeVar, Union
 
 from typing_extensions import Literal
 
