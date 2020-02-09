@@ -2,7 +2,7 @@
 """Delete scheduled task(s) by id.
 
 Usage:
-  pa_delete_scheduled_task.py ids <num>...
+  pa_delete_scheduled_task.py id <num>...
   pa_delete_scheduled_task.py nuke [--force]
 
 Options:
@@ -10,9 +10,7 @@ Options:
   -f, --force                 Bla
 
 Note:
-  Task <id> may be found using `pa_get_scheduled_tasks_list.py` script."""
-
-import sys
+  Task id <num> may be found using `pa_get_scheduled_tasks_list.py` script."""
 
 from docopt import docopt
 
@@ -20,36 +18,39 @@ from pythonanywhere.scripts_commons import ScriptSchema, get_logger, get_task_fr
 from pythonanywhere.task import TaskList
 
 
-def main(*, ids, num, nuke, force):
+def _delete_all(force):
+    if not force:
+        if input("This will irrevocably delete all your tasks, proceed? [y/N] ").lower() != "y":
+            return None
+
+    for task in TaskList().tasks:
+        task.delete_schedule()
+
+
+def _delete_by_id(id_numbers):
+    for task_id in id_numbers:
+        task = get_task_from_id(task_id, no_exit=True)
+        task.delete_schedule()
+
+
+def main(*, id_numbers, nuke, force):
     get_logger(set_info=True)
 
     if nuke:
-        if not force:
-            try:
-                decision = input("This will irrevocably delete all your tasks, proceed? [y/N] ")
-            except Exception:
-                pass
-            if decision.lower() != "y":
-                sys.exit()
-        tasks = [task.task_id for task in TaskList().tasks]
+        _delete_all(force)
     else:
-        tasks = num
-
-    for task in tasks:
-        try:
-            task = get_task_from_id(task, no_exit=True)
-            task.delete_schedule()
-        except Exception:
-            pass
+        _delete_by_id(id_numbers)
 
 
 if __name__ == "__main__":
     schema = ScriptSchema(
         {
-            "ids": bool,
+            "id": bool,
             "<num>": ScriptSchema.id_multi,
             "nuke": bool,
             "--force": ScriptSchema.boolean,
         }
     )
-    main(**schema.validate_user_input(docopt(__doc__)))
+    arguments = schema.validate_user_input(docopt(__doc__), conversions={"num": "id_numbers"})
+    arguments.pop("id")
+    main(**arguments)
