@@ -17,7 +17,7 @@ class Task:
     task. This means the proper way to create an object representing
     existing existing task or a task ready to be created a `Task` instance
     should be created using classmethod constructors: `Task.from_id`,
-    `Task.to_be_created` or Task.from_specs`.
+    `Task.to_be_created` or Task.from_api_specs`.
 
     To create new task use :classmethod:`Task.to_be_created` and call
     :method:`Task.create_schedule` on it.
@@ -28,8 +28,9 @@ class Task:
     - to delete the task use :method:`Task.delete_schedule`,
     - to update the task use :method:`Task.update_schedule`.
 
-    :classmethod:`Task.from_specs` is intended to to be called with specs
-    returned by API and should not be used directly in scripts.
+    :classmethod:`Task.from_api_specs` is intended to to be called with
+    specs returned by API and should not be used with arbitrary specs
+    defined by user.
 
     `Task` class is API agnostic meaning all API calls are made using the
     `pythonanywhere.schedule_api.Schedule` interface via `Task.schedule`
@@ -103,7 +104,7 @@ class Task:
         return task
 
     @classmethod
-    def from_specs(cls, specs):
+    def from_api_specs(cls, specs):
         """Create object representing scheduled task with specs returned by API.
 
         *Note* don't use this method in scripts. To create a new task use
@@ -233,4 +234,4 @@ class TaskList:
     Tasks are stored in `TaskList.tasks` variable."""
 
     def __init__(self):
-        self.tasks = [Task.from_specs(specs) for specs in Schedule().get_list()]
+        self.tasks = [Task.from_api_specs(specs) for specs in Schedule().get_list()]

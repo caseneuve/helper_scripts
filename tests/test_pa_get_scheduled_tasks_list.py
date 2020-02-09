@@ -32,7 +32,7 @@ def example_tasks_list():
 
 @pytest.mark.tasks
 def test_logs_task_list_as_table(example_tasks_list, mocker):
-    tasks = [Task.from_specs(specs) for specs in example_tasks_list]
+    tasks = [Task.from_api_specs(specs) for specs in example_tasks_list]
     mock_TaskList = mocker.patch("scripts.pa_get_scheduled_tasks_list.TaskList")
     mock_TaskList.return_value.tasks = tasks
     mock_tabulate = mocker.patch("scripts.pa_get_scheduled_tasks_list.tabulate")
