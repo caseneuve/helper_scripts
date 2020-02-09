@@ -16,21 +16,20 @@ Usage:
                                    [--quiet | --porcelain]
 
 Options:
-  -h, --help                     Print this message
-  -c, --command COMMAND          Changes command to COMMAND (multiword commands
-                                 should be quoted)
-  -o, --hour HOUR                Changes hour to HOUR (in 24h format)
-  -m, --minute MINUTE            Changes minute to MINUTE
-  -d --disable                   Disables task
-  -e --enable                    Enables task
-  -t --toggle-enabled            Toggles enable/disable state
-  -a --daily                     Switches interval to daily (requires setting
-                                 --hour, otherwise script's execution hour will
-                                 be set)
-  -u --hourly                    Switches interval to hourly (takes precedence
-                                 over --hour, i.e. sets hour to None)
-  -n --quiet                     Turns off messages
-  -p --porcelain                 Prints message in easy-to-parse format
+  -h, --help                  Print this message
+  -c, --command COMMAND       Changes command to COMMAND (multiword commands
+                              should be quoted)
+  -o, --hour HOUR             Changes hour to HOUR (in 24h format)
+  -m, --minute MINUTE         Changes minute to MINUTE
+  -d, --disable               Disables task
+  -e, --enable                Enables task
+  -t, --toggle-enabled        Toggles enable/disable state
+  -a, --daily                 Switches interval to daily (when --hour is not
+                              provided, sets it automatically to current hour)
+  -u, --hourly                Switches interval to hourly (takes precedence
+                              over --hour, i.e. sets hour to None)
+  -n, --quiet                 Turns off messages
+  -p, --porcelain             Prints message in easy-to-parse format
 
 Example:
   Change command for a scheduled task 42:

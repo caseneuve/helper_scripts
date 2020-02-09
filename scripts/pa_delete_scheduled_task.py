@@ -5,7 +5,7 @@ Usage:
   pa_delete_scheduled_task.py <id>
 
 Options:
-  -h --help                      Print this message
+  -h, --help                  Print this message
 
 Note:
   Task <id> may be found using `pa_get_scheduled_tasks_list.py` script."""

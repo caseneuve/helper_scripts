@@ -4,6 +4,13 @@
 Available specs are: command, enabled, interval, hour, minute, printable-time,
 logfile, expiry. If no option specified, script will output all mentioned specs.
 
+Note that logfile query provides path for current (last) logfile. There may be
+logfiles for the task.
+If task has been updated (e.g. by `pa_update_scheduled_task.py` script) logfile
+name has changed too, but the file will not be created until first execution of
+the task. Thus getting logfile path via API call does not necessarily mean the
+file exists on the server yet.
+
 Usage:
   pa_get_scheduled_task_specs.py <id> [--command] [--enabled] [--interval]
                                       [--hour] [--minute] [--printable-time]
@@ -11,17 +18,17 @@ Usage:
                                       [--snakesay | --no-spec]
 
 Options:
-  -h --help                      Prints this message
-  -c --command                   Prints task's command
-  -e --enabled                   Prints True if task is enabled
-  -i --interval                  Prints task's frequency (daily or hourly)
-  -l --logfile                   Prints task's current log file name
-  -m --minute                    Prints task's scheduled minute
-  -o --hour                      Prints task's scheduled hour (if daily)
-  -p --printable-time            Prints task's scheduled time
-  -x --expiry                    Prints task's expiry date
-  -n --no-spec                   Prints only values without spec names
-  -s --snakesay                  Turns on snakesay... because why not
+  -h, --help                  Prints this message
+  -c, --command               Prints task's command
+  -e, --enabled               Prints task's enabled status (True or False)
+  -i, --interval              Prints task's frequency (daily or hourly)
+  -l, --logfile               Prints task's current log file path
+  -m, --minute                Prints task's scheduled minute
+  -o, --hour                  Prints task's scheduled hour (if daily)
+  -p, --printable-time        Prints task's scheduled time
+  -x, --expiry                Prints task's expiry date
+  -n, --no-spec               Prints only values without spec names
+  -s, --snakesay              Turns on snakesay... because why not
 
 Note:
   Task <id> may be found using pa_get_scheduled_tasks_list.py script.
