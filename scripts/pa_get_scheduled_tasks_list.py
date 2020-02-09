@@ -8,7 +8,13 @@ Usage:
 Options:
   -h, --help                  Prints this message
   -f, --format TABLEFMT       Sets table format supported by tabulate
-                              (defaults to 'simple')"""
+                              (defaults to 'simple')
+
+Note:
+  This script provides an overview of all tasks. Once a task id is
+  known and some specific data is required it's more convenient to get
+  it using `pa_get_scheduled_task_specs.py` script instead of parsing
+  the table."""
 
 from docopt import docopt
 from tabulate import tabulate
