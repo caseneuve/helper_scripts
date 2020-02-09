@@ -2,15 +2,15 @@
 """Create a new scheduled task.
 
 Usage:
-  pa_create_scheduled_task.py --command <command> [--hour=<hour>] --minute=<minute> [--disabled]
+  pa_create_scheduled_task.py --command COMMAND [--hour=HOUR] --minute=MINUTE [--disabled]
 
 Options:
-  -h --help                      Print this message
-  -c --command=<command>         Shell command to be scheduled
-  -o --hour=<hour>               Sets the task to be performed daily on the specified hour
+  -h, --help                     Print this message
+  -c, --command COMMAND          Task's command to be scheduled
+  -o, --hour HOUR                Sets the task to be performed daily at HOUR
                                  (otherwise the task will be run hourly)
-  -m --minute=<minute>           Minute on which the task will be executed
-  -d --disabled                  Create disabled task (by default tasks are enabled)
+  -m, --minute MINUTE             Minute on which the task will be executed
+  -d, --disabled                  Create disabled task (by default tasks are enabled)
 
 Example:
   Create a daily task to be run at 13:15:
