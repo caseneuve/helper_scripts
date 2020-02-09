@@ -23,13 +23,13 @@ def main(tablefmt):
     headers = "id", "interval", "at", "status", "command"
     attrs = "task_id", "interval", "printable_time", "enabled", "command"
 
-    def convert(task, attr):
+    def get_right_value(task, attr):
         value = getattr(task, attr)
         if attr == "enabled":
             value = "enabled" if value else "disabled"
         return value
 
-    table = [[convert(task, attr) for attr in attrs] for task in TaskList().tasks]
+    table = [[get_right_value(task, attr) for attr in attrs] for task in TaskList().tasks]
     msg = tabulate(table, headers, tablefmt=tablefmt) if table else snakesay("No active tasks")
     logger.info(msg)
 

@@ -74,7 +74,7 @@ class Task:
 
         task = cls()
         specs = task.schedule.get_specs(task_id)
-        task._update_specs(specs)
+        task.update_specs(specs)
         return task
 
     @classmethod
@@ -114,10 +114,10 @@ class Task:
         :returns: `Task` instance with actual specs."""
 
         task = cls()
-        task._update_specs(specs)
+        task.update_specs(specs)
         return task
 
-    def _update_specs(self, specs):
+    def update_specs(self, specs):
         """Sets `Task` instance's attributes using specs returned by API.
 
         *Note*: don't use this method in scripts.
@@ -143,7 +143,7 @@ class Task:
         if self.hour:
             params["hour"] = self.hour
 
-        self._update_specs(self.schedule.create(params))
+        self.update_specs(self.schedule.create(params))
 
         mode = "will" if self.enabled else "may be enabled to"
         msg = (
@@ -222,7 +222,7 @@ class Task:
                 logger.info(make_msg(join_with="\n"))
             else:
                 logger.info(snakesay(make_msg(join_with=", ")))
-            self._update_specs(new_specs)
+            self.update_specs(new_specs)
         else:
             logger.warning(snakesay("Nothing to update!"))
 

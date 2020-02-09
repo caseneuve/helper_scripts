@@ -108,7 +108,8 @@ def get_logger(set_info=False):
 def get_task_from_id(task_id, no_exit=False):
     """Get `Task.from_id` instance representing existing task.
 
-    :param task_id: integer (should be a valid task id)"""
+    :param task_id: integer (should be a valid task id)
+    :param no_exit: if False sys.exit will be called when exception is caught"""
 
     try:
         return Task.from_id(task_id)
