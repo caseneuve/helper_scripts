@@ -38,6 +38,7 @@ class ScriptSchema(Schema):
     minute_required = And(Use(int), lambda m: 0 <= m <= 59, error="--minute has to be in 0..59")
     minute = Or(None, minute_required)
     id_required = And(Use(int), error="<id> has to be an integer")
+    id_multi = Or([], And(lambda y: [x.isdigit() for x in y], error="<id> has to be integer"))
     string = Or(None, str)
     tabulate_format = Or(
         None,
@@ -45,39 +46,34 @@ class ScriptSchema(Schema):
         error="--format should match one of: {}".format(", ".join(tabulate_formats)),
     )
 
-    @staticmethod
-    def convert(string):
+    replacements = {"--": "", "<": "", ">": ""}
+
+    def convert(self, string):
         """Removes cli arguement notation characters ('--', '<', '>' etc.).
 
         :param string: cli argument key to be converted to fit Python
         argument syntax."""
 
-        to_be_replaced = {
-            "--": "",
-            "<": "",
-            ">": "",
-            # below are hardcoded cases used in task scripts; todo: extract this separate argument
-            # to make it more explicit in scripts and enable universal usage of adding any
-            # replacement combinations
-            "id": "task_id",
-            "no-": "no_",
-            "printable-": "printable_",
-            "snakesay": "snake",
-            "toggle-": "toggle_",
-        }
-        for key, value in to_be_replaced.items():
+        for key, value in self.replacements.items():
             string = string.replace(key, value)
         return string
 
-    def validate_user_input(self, arguments):
+    def validate_user_input(self, arguments, *, conversions=None):
         """Calls `Schema.validate` on provided `arguments`.
 
         Returns dictionary with keys converted by
         `ScriptSchema.convert` :method: to be later used as kwarg
-        arguements.
+        arguements. Universal rules for conversion are stored in
+        `replacements` class variable and may be updated using
+        `conversions` kwarg.
 
         :param arguments: dictionary of cli arguments provided be
-        (e.g.) `docopt`"""
+        (e.g.) `docopt`
+        :param conversions: dictionary of additional rules to
+        `self.replacements`"""
+
+        if conversions:
+            self.replacements.update(conversions)
 
         try:
             self.validate(arguments)
@@ -109,7 +105,7 @@ def get_logger(set_info=False):
     return logger
 
 
-def get_task_from_id(task_id):
+def get_task_from_id(task_id, no_exit=False):
     """Get `Task.from_id` instance representing existing task.
 
     :param task_id: integer (should be a valid task id)"""
@@ -118,4 +114,5 @@ def get_task_from_id(task_id):
         return Task.from_id(task_id)
     except Exception as e:
         logger.warning(snakesay(str(e)))
-        sys.exit(1)
+        if not no_exit:
+            sys.exit(1)
