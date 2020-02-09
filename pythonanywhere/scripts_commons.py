@@ -35,10 +35,10 @@ class ScriptSchema(Schema):
     # class variables are used in task scripts schemata:
     boolean = Or(None, bool)
     hour = Or(None, And(Use(int), lambda h: 0 <= h <= 23), error="--hour has to be in 0..23")
-    minute_required = And(Use(int), lambda m: 0 <= m <= 59, error="--minute has to be in 0..59")
-    minute = Or(None, minute_required)
-    id_required = And(Use(int), error="<id> has to be an integer")
     id_multi = Or([], And(lambda y: [x.isdigit() for x in y], error="<id> has to be integer"))
+    id_required = And(Use(int), error="<id> has to be an integer")
+    minute = Or(None, minute_required)
+    minute_required = And(Use(int), lambda m: 0 <= m <= 59, error="--minute has to be in 0..59")
     string = Or(None, str)
     tabulate_format = Or(
         None,
