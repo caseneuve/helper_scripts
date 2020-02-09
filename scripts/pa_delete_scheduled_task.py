@@ -1,5 +1,5 @@
 #!/usr/bin/python3.5
-"""Delete scheduled task(s) by id.
+"""Delete scheduled task(s) by id or nuke'em all.
 
 Usage:
   pa_delete_scheduled_task.py id <num>...
@@ -7,7 +7,7 @@ Usage:
 
 Options:
   -h, --help                  Prints this message
-  -f, --force                 Bla
+  -f, --force                 Deletes all tasks without asking
 
 Note:
   Task id <num> may be found using `pa_get_scheduled_tasks_list.py` script."""
@@ -44,13 +44,9 @@ def main(*, id_numbers, nuke, force):
 
 if __name__ == "__main__":
     schema = ScriptSchema(
-        {
-            "id": bool,
-            "<num>": ScriptSchema.id_multi,
-            "nuke": bool,
-            "--force": ScriptSchema.boolean,
-        }
+        {"id": bool, "<num>": ScriptSchema.id_multi, "nuke": bool, "--force": ScriptSchema.boolean}
     )
     arguments = schema.validate_user_input(docopt(__doc__), conversions={"num": "id_numbers"})
     arguments.pop("id")
+
     main(**arguments)
