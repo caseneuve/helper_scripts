@@ -100,12 +100,14 @@ class TestTaskDeleteSchedule:
     def test_calls_schedule_delete(self, example_task, mocker):
         mock_delete = mocker.patch("pythonanywhere.schedule_api.Schedule.delete")
         mock_delete.return_value = True
+        mock_snake = mocker.patch("pythonanywhere.task.snakesay")
         mock_logger = mocker.patch("pythonanywhere.task.logger.info")
 
         example_task.delete_schedule()
 
         assert mock_delete.call_args == call(42)
-        assert mock_logger.call_args == call("\n< Task 42 deleted! >\n   \\\n    ~<:>>>>>>>>>")
+        assert mock_snake.call_args == call("Task 42 deleted!")
+        assert mock_logger.call_args == call(mock_snake.return_value)
 
     def test_raises_when_schedule_delete_fails(self, mocker):
         mock_delete = mocker.patch("pythonanywhere.schedule_api.Schedule.delete")
@@ -147,9 +149,6 @@ class TestTaskUpdateSchedule:
         mock_schedule_update = mocker.patch("pythonanywhere.schedule_api.Schedule.update")
         mock_info = mocker.patch("pythonanywhere.task.logger.info")
         mock_snake = mocker.patch("pythonanywhere.task.snakesay")
-        mock_snake.return_value = (
-            "\n< Task 42 updated: <enabled> from 'True' to 'False' >\n   \\\n    ~<:>>>>>>>>>"
-        )
         mock_update_specs = mocker.patch("pythonanywhere.task.Task._update_specs")
         params = {"enabled": False}
         task_specs.update(params)
@@ -157,9 +156,7 @@ class TestTaskUpdateSchedule:
 
         example_task.update_schedule(params, porcelain=False)
 
-        assert mock_info.call_args == call(
-            "\n< Task 42 updated: <enabled> from 'True' to 'False' >\n   \\\n    ~<:>>>>>>>>>"
-        )
+        assert mock_info.call_args == call(mock_snake.return_value)
         assert mock_snake.call_args == call("Task 42 updated: <enabled> from 'True' to 'False'")
         assert mock_update_specs.call_args == call(task_specs)
 
@@ -176,6 +173,7 @@ class TestTaskUpdateSchedule:
 
     def test_warns_when_nothing_to_update(self, mocker, example_task, task_specs):
         mock_schedule_update = mocker.patch("pythonanywhere.schedule_api.Schedule.update")
+        mock_snake = mocker.patch("pythonanywhere.task.snakesay")
         mock_warning = mocker.patch("pythonanywhere.task.logger.warning")
         mock_update_specs = mocker.patch("pythonanywhere.task.Task._update_specs")
         mock_schedule_update.return_value = task_specs
@@ -183,7 +181,8 @@ class TestTaskUpdateSchedule:
 
         example_task.update_schedule(params)
 
-        assert mock_warning.call_args == call("\n< Nothing to update! >\n   \\\n    ~<:>>>>>>>>>")
+        assert mock_snake.call_args == call("Nothing to update!")
+        assert mock_warning.call_args == call(mock_snake.return_value)
         assert mock_update_specs.call_count == 0
         assert mock_schedule_update.call_args == call(
             42, {"hour": 16, "enabled": True, "interval": "daily", "command": "echo foo"},

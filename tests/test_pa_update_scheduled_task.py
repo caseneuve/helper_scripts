@@ -67,12 +67,12 @@ class TestUpdateScheduledTask:
     def test_warns_when_task_update_schedule_raises(self, task_from_id, args, mocker):
         mock_logger = mocker.patch("scripts.pa_update_scheduled_task.get_logger")
         task_from_id.return_value.update_schedule.side_effect = Exception("error")
+        mock_snake = mocker.patch("scripts.pa_update_scheduled_task.snakesay")
 
         main(**args)
 
-        assert mock_logger.return_value.warning.call_args == call(
-            "\n< error >\n   \\\n    ~<:>>>>>>>>>"
-        )
+        assert mock_snake.call_args == call("error")
+        assert mock_logger.return_value.warning.call_args == call(mock_snake.return_value)
 
     def test_ensures_proper_daily_params(self, task_from_id, args):
         args.update({"hourly": True})

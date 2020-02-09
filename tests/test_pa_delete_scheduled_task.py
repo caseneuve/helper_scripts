@@ -19,10 +19,12 @@ class TestDeleteScheduledTask:
         mock_from_id = mocker.patch("pythonanywhere.task.Task.from_id")
         mock_from_id.side_effect = Exception("error")
         mock_logger = mocker.patch("pythonanywhere.scripts_commons.logger.warning")
+        mock_snake = mocker.patch("pythonanywhere.scripts_commons.snakesay")
         mock_exit = mocker.patch("pythonanywhere.scripts_commons.sys.exit")
 
         with pytest.raises(Exception):
             main(task_id=999)
 
         assert mock_exit.call_count == 1
-        assert mock_logger.call_args == call("\n< error >\n   \\\n    ~<:>>>>>>>>>")
+        assert mock_snake.call_args == call("error")
+        assert mock_logger.call_args == call(mock_snake.return_value)
