@@ -6,8 +6,8 @@ Usage:
   pa_get_scheduled_tasks_list.py [--format TABLEFMT]
 
 Options:
-  -h, --help                  Print this message
-  -f, --format TABLEFMT       Table format supported by tabulate
+  -h, --help                  Prints this message
+  -f, --format TABLEFMT       Sets table format supported by tabulate
                               (defaults to 'simple')"""
 
 from docopt import docopt
