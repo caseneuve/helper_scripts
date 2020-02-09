@@ -23,7 +23,7 @@ class ScriptSchema(Schema):
     """Extends `Schema` adapting it to PA scripts validation strategies.
 
     Adds predefined schemata as class variables to be used in scripts'
-    validation schemas as well as `validate_user_input` method wich acts
+    validation schemas as well as `validate_user_input` method which acts
     as `Schema.validate` but returns a dictionary with converted keys
     ready to be used as function keyword arguments, e.g. validated
     arguments {"--foo": bar, "<baz>": qux} will be be converted to
@@ -49,7 +49,7 @@ class ScriptSchema(Schema):
     replacements = {"--": "", "<": "", ">": ""}
 
     def convert(self, string):
-        """Removes cli arguement notation characters ('--', '<', '>' etc.).
+        """Removes cli argument notation characters ('--', '<', '>' etc.).
 
         :param string: cli argument key to be converted to fit Python
         argument syntax."""
@@ -63,7 +63,7 @@ class ScriptSchema(Schema):
 
         Returns dictionary with keys converted by
         `ScriptSchema.convert` :method: to be later used as kwarg
-        arguements. Universal rules for conversion are stored in
+        arguments. Universal rules for conversion are stored in
         `replacements` class variable and may be updated using
         `conversions` kwarg.
 

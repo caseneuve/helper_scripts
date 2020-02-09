@@ -19,7 +19,7 @@ class Schedule:
     Use :method: `Schedule.create` to create new task.
     Use :method: `Schedule.get_specs` to get existing task specs.
     Use :method: `Schedule.delete` to delete existing task.
-    Use :method: `Schedule.update` to udpate existing task."""
+    Use :method: `Schedule.update` to update existing task."""
 
     base_url = get_api_endpoint().format(username=getpass.getuser(), flavor="schedule")
 
@@ -88,7 +88,7 @@ class Schedule:
             )
 
     def update(self, task_id, params):
-        """Udpates existing task using id and params.
+        """Updates existing task using id and params.
 
         Params should at least one of: command, enabled, interval, hour,
         minute. To update hourly task don't use 'hour' param. On the other
