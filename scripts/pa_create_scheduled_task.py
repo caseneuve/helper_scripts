@@ -1,5 +1,10 @@
 #!/usr/bin/python3.5
-"""Create a new scheduled task.
+"""Create a scheduled task.
+
+Two categories of tasks are available: daily and hourly.
+Both kinds require a command to run and scheduled time. In order to create a
+daily task provide hour and minute; to create hourly task provide only minute.
+If task is intended to be enabled later add --disabled flag.
 
 Usage:
   pa_create_scheduled_task.py --command COMMAND [--hour HOUR] --minute MINUTE
@@ -20,7 +25,10 @@ Example:
 
   Create an inactive hourly task to be run 27 minutes past every hour:
 
-    pa_create_scheduled_task.py --command "echo bar" --minute 27 --disabled"""
+    pa_create_scheduled_task.py --command "echo bar" --minute 27 --disabled
+
+Note:
+  Tasks behavior may be altered later on with `pa_update_scheduled_task.py` script."""
 
 from docopt import docopt
 
