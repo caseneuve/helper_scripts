@@ -36,7 +36,7 @@ def main(tablefmt):
         return value
 
     table = [[get_right_value(task, attr) for attr in attrs] for task in TaskList().tasks]
-    msg = tabulate(table, headers, tablefmt=tablefmt) if table else snakesay("No active tasks")
+    msg = tabulate(table, headers, tablefmt=tablefmt) if table else snakesay("No scheduled tasks")
     logger.info(msg)
 
 
