@@ -59,4 +59,4 @@ class TestGetScheduledTasksList:
 
         main(tablefmt="simple")
 
-        assert mock_snake.call_args == call("No active tasks")
+        assert mock_snake.call_args == call("No scheduled tasks")
