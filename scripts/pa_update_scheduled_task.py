@@ -28,7 +28,7 @@ Options:
                               provided, sets it automatically to current hour)
   -u, --hourly                Switches interval to hourly (takes precedence
                               over --hour, i.e. sets hour to None)
-  -n, --quiet                 Turns off messages
+  -q, --quiet                 Turns off messages
   -p, --porcelain             Prints message in easy-to-parse format
 
 Example:
