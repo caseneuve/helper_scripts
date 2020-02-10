@@ -5,10 +5,10 @@ Available specs are: command, enabled, interval, hour, minute, printable-time,
 logfile, expiry. If no option specified, script will output all mentioned specs.
 
 Note that logfile query provides path for current (last) logfile. There may be
-logfiles for the task.
+several logfiles for each task.
 If task has been updated (e.g. by `pa_update_scheduled_task.py` script) logfile
-name has changed too, but the file will not be created until first execution of
-the task. Thus getting logfile path via API call does not necessarily mean the
+name has been changed too, but the file will not be created until first execution
+of the task. Thus getting logfile path via API call does not necessarily mean the
 file exists on the server yet.
 
 Usage:
