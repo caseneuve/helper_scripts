@@ -28,7 +28,9 @@ Example:
     pa_create_scheduled_task.py --command "echo bar" --minute 27 --disabled
 
 Note:
-  Tasks behavior may be altered later on with `pa_update_scheduled_task.py` script."""
+  Once task is created its behavior may be altered later on with
+  `pa_update_scheduled_task.py` or deleted with `pa_delete_scheduled_task.py`
+  scripts."""
 
 from docopt import docopt
 
