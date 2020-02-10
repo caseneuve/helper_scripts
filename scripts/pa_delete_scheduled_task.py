@@ -7,10 +7,10 @@ Usage:
 
 Options:
   -h, --help                  Prints this message
-  -f, --force                 Deletes all tasks without asking
+  -f, --force                 Turns off user confirmation before deleting tasks
 
 Note:
-  Task id <num> may be found using `pa_get_scheduled_tasks_list.py` script."""
+  Task id <num> may be acquired with `pa_get_scheduled_tasks_list.py` script."""
 
 from docopt import docopt
 
