@@ -1,6 +1,6 @@
 from typing import List, Optional
 
-from typing_exceptions import Literal
+from typing_extensions import Literal
 
 class Schedule:
     base_url: str = ...
