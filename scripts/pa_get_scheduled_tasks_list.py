@@ -1,6 +1,6 @@
 #!/usr/bin/python3.5
 """Get list of user's scheduled tasks as a table with columns:
-id, interval, at (hour:minute/minute past), enabled, command.
+id, interval, at (hour:minute/minute past), status (enabled/disabled), command.
 
 Usage:
   pa_get_scheduled_tasks_list.py [--format TABLEFMT]
